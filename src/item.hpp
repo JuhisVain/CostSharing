@@ -2,11 +2,7 @@
 #define ITEM_H
 
 #include <string>
-
-struct weightlist {
-  int weight;
-  struct weightlist *next;
-};
+#include <vector>
 
 class Item
 {
@@ -21,7 +17,7 @@ public:
 private:
   std::string name;
   int price; //in cents
-
+  std::vector<int> weights;
   
 };
 
