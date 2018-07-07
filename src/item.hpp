@@ -7,7 +7,7 @@
 class Item
 {
 public:
-  Item(int payer_count);
+  explicit Item(int payer_count);
   void Set_name(std::string new_name);
   std::string Get_name();
   void Set_price(int new_price);

@@ -9,6 +9,7 @@ public:
   Payer();
   Payer(std::string& new_name, int paid);
   ~Payer();
+  Payer(const Payer& tocopy);
   void Set_name(std::string& name);
   std::string Get_name();
   void Set_paid(int paid);
@@ -16,6 +17,8 @@ public:
   void Set_topay(int new_topay);
   int Get_topay();
   int Add_topay(int addpay);
+
+  static int Get_total_payers();
 
   int Get_id();
   
