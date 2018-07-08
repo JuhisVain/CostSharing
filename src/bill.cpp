@@ -30,3 +30,8 @@ std::vector<Item*> Bill::Get_items()
 {
   return items;
 }
+
+Item* Bill::Get_item(int index)
+{
+  return items[index];
+}

@@ -10,11 +10,12 @@ int main()
 
   std::string input;
 
-  while (input != "4") {
+  while (input != "5") {
     std::cout << "1) New payer" << std::endl;
     std::cout << "2) New bill" << std::endl;
-    std::cout << "3) Calculate" << std::endl;
-    std::cout << "4) End" << std::endl;
+    std::cout << "3) Display bills" << std::endl;
+    std::cout << "4) Calculate" << std::endl;
+    std::cout << "5) End" << std::endl;
 
     std::cin >> input;
 
@@ -42,10 +43,7 @@ int main()
 
       std::cout << "Who paid for this bill?" << std::endl;
       
-      std::cout << "Total payers is now " << Payer::Get_total_payers() << std::endl;
       std::list<Payer*>::iterator iter = allbills.payers.begin();
-
-      std::cout << "Total payers is now " << Payer::Get_total_payers() << std::endl;
       
       for (int i = 0; i < allbills.payers.size(); ++i, ++iter) {
 	std::cout << (*iter)->Get_id() << ") " << (*iter)->Get_name() << std::endl;
@@ -100,7 +98,35 @@ int main()
 		  << items[i]->Get_price() << " cents" << std::endl;
       }
       
-    } else {}
+    } else if (input == "3") {
+      std::cout << "Bills / Payers";
+
+      std::list<Payer*>::iterator payiter = allbills.payers.begin();
+      for (int i = 0; i < allbills.payers.size(); ++i, ++payiter) { //Payer names
+	std::cout << "\t" << (*payiter)->Get_name();
+      }
+      std::cout << std::endl;
+
+      std::list<Bill*>::iterator billiter = allbills.bills.begin();
+      for (int i = 0; i < allbills.bills.size(); ++i, ++billiter) { //Bill data
+	std::cout << (*billiter)->Get_name() << "Paid by "
+		  << (*billiter)->Get_payer()->Get_name() << std::endl;
+
+	for (int j = 0; j < (*billiter)->Get_items().size(); ++j) { //Item data
+	  Item* item = (*billiter)->Get_item(j);
+	  std::cout << " -" << item->Get_name();
+
+	  for (int k = 0; k < item->Get_weights()->size(); ++k) { //Item weights
+	    std::cout << "\t" << (*item->Get_weights())[k]; 
+	  }
+	  std::cout << std::endl;
+	  
+	}
+	std::cout << std::endl;
+	
+      }
+      
+    }
 
     
 

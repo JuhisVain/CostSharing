@@ -13,6 +13,7 @@ public:
   void Set_price(int new_price);
   int Get_price();
   void Set_weight(int index, int weight);
+  std::vector<int> *Get_weights();
 
 private:
   std::string name;

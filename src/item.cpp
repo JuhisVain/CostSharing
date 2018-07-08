@@ -51,3 +51,8 @@ void Item::Set_weight(int index, int weight)
     //tilt
   }
 }
+
+std::vector<int> *Item::Get_weights()
+{
+  return &weights;
+}

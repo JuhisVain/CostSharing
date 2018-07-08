@@ -14,6 +14,7 @@ public:
   Payer *Get_payer();
   Item *New_item();
   std::vector<Item*> Get_items();
+  Item *Get_item(int index);
   
   
 private:
