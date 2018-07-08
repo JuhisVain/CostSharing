@@ -7,8 +7,8 @@
 
 struct All_bills
 {
-  std::list<Payer> payers;
-  std::list<Bill> bills;
+  std::list<Payer*> payers;
+  std::list<Bill*> bills;
 };
 
 #endif

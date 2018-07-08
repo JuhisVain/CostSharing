@@ -33,7 +33,7 @@ int main()
 
       in_payer->Set_paid(cents_paid);
 
-      allbills.payers.push_back(*in_payer);
+      allbills.payers.push_back(in_payer);
 
     } else if (input == "2") {
       std::string nameofbill;
@@ -43,12 +43,12 @@ int main()
       std::cout << "Who paid for this bill?" << std::endl;
       
       std::cout << "Total payers is now " << Payer::Get_total_payers() << std::endl;
-      std::list<Payer>::iterator iter = allbills.payers.begin();
+      std::list<Payer*>::iterator iter = allbills.payers.begin();
 
       std::cout << "Total payers is now " << Payer::Get_total_payers() << std::endl;
       
       for (int i = 0; i < allbills.payers.size(); ++i, ++iter) {
-	std::cout << iter->Get_id() << ") " << iter->Get_name() << std::endl;
+	std::cout << (*iter)->Get_id() << ") " << (*iter)->Get_name() << std::endl;
       }
 
       std::cin >> input;
@@ -64,7 +64,7 @@ int main()
 
       std::cout << "Pushing bill to allbills.bills." << std::endl;
       
-      allbills.bills.push_back(*in_bill);
+      allbills.bills.push_back(in_bill);
 
 
 
@@ -88,16 +88,16 @@ int main()
 	}
       }
 
-      std::list<Bill>::iterator lastbill = (--allbills.bills.end());
+      std::list<Bill*>::iterator lastbill = (--allbills.bills.end());
 
-      std::cout << "Bill " << lastbill->Get_name();
-      std::cout	<< ", paid by " << lastbill->Get_payer().Get_name()
+      std::cout << "Bill " << (*lastbill)->Get_name();
+      std::cout	<< ", paid by " << (*lastbill)->Get_payer()->Get_name()
 		<< std::endl;
       
-      std::vector<Item> items = lastbill->Get_items();
+      std::vector<Item*> items = (*lastbill)->Get_items();
       for (int i = 0; i < items.size(); ++i) {
-	std::cout << "\t" << items[i].Get_name() << ", : "
-		  << items[i].Get_price() << " cents" << std::endl;
+	std::cout << "\t" << items[i]->Get_name() << ", : "
+		  << items[i]->Get_price() << " cents" << std::endl;
       }
       
     } else {}
