@@ -6,7 +6,7 @@
 int main()
 {
 
-  struct All_bills allbills;
+  All_bills allbills;
 
   std::string input;
 
@@ -34,7 +34,8 @@ int main()
 
       in_payer->Set_paid(cents_paid);
 
-      allbills.payers.push_back(in_payer);
+      //allbills.payers.push_back(in_payer);
+      allbills.New_payer(in_payer);
 
     } else if (input == "2") {
       std::string nameofbill;
@@ -43,26 +44,29 @@ int main()
 
       std::cout << "Who paid for this bill?" << std::endl;
       
-      std::list<Payer*>::iterator iter = allbills.payers.begin();
+      //std::list<Payer*>::iterator iter = allbills.payers.begin();
+      //std::list<Payer*>::iterator iter = allbills.Get_payer_iterator();
+      std::vector<Payer*> payer_vector = allbills.Get_payers();
       
-      for (int i = 0; i < allbills.payers.size(); ++i, ++iter) {
-	std::cout << (*iter)->Get_id() << ") " << (*iter)->Get_name() << std::endl;
+      for (int i = 0; i < payer_vector.size(); ++i) {
+	std::cout << payer_vector[i]->Get_id() << ") "
+		  << payer_vector[i]->Get_name() << std::endl;
       }
 
       std::cin >> input;
-
+      /*
       iter = allbills.payers.begin();
       for (int i = 0; i < std::stoi(input); ++i) {
 	++iter;
       }
-
+      */
       std::cout << "Creating new bill." << std::endl;
       
-      Bill *in_bill = new Bill(nameofbill,*iter);
+      Bill *in_bill = new Bill(nameofbill,payer_vector[std::stoi(input)]); //DANGER
 
       std::cout << "Pushing bill to allbills.bills." << std::endl;
       
-      allbills.bills.push_back(in_bill);
+      allbills.New_bill(in_bill);
 
 
 
@@ -86,13 +90,15 @@ int main()
 	}
       }
 
-      std::list<Bill*>::iterator lastbill = (--allbills.bills.end());
-
-      std::cout << "Bill " << (*lastbill)->Get_name();
-      std::cout	<< ", paid by " << (*lastbill)->Get_payer()->Get_name()
+      //Bill *lastbill = allbills.bills.back();
+      std::vector<Bill*> bills = allbills.Get_bills();
+      
+      
+      std::cout << "Bill " << bills.back()->Get_name();
+      std::cout	<< ", paid by " << bills.back()->Get_payer()->Get_name()
 		<< std::endl;
       
-      std::vector<Item*> items = (*lastbill)->Get_items();
+      std::vector<Item*> items = bills.back()->Get_items();
       for (int i = 0; i < items.size(); ++i) {
 	std::cout << "\t" << items[i]->Get_name() << ", : "
 		  << items[i]->Get_price() << " cents" << std::endl;
@@ -101,19 +107,23 @@ int main()
     } else if (input == "3") {
       std::cout << "Bills / Payers";
 
-      std::list<Payer*>::iterator payiter = allbills.payers.begin();
-      for (int i = 0; i < allbills.payers.size(); ++i, ++payiter) { //Payer names
-	std::cout << "\t" << (*payiter)->Get_name();
+      //std::list<Payer*>::iterator payiter = allbills.payers.begin();
+      std::vector<Payer*> payer_vector = allbills.Get_payers();
+      
+      for (int i = 0; i < payer_vector.size(); ++i) { //Payer names
+	std::cout << "\t" << payer_vector[i]->Get_name();
       }
       std::cout << std::endl;
 
-      std::list<Bill*>::iterator billiter = allbills.bills.begin();
-      for (int i = 0; i < allbills.bills.size(); ++i, ++billiter) { //Bill data
-	std::cout << (*billiter)->Get_name() << "Paid by "
-		  << (*billiter)->Get_payer()->Get_name() << std::endl;
+      //std::list<Bill*>::iterator billiter = allbills.bills.begin();
+      std::vector<Bill*> bill_vector = allbills.Get_bills();
+      
+      for (int i = 0; i < bill_vector.size(); ++i) { //Bill data
+	std::cout << bill_vector[i]->Get_name() << "Paid by "
+		  << bill_vector[i]->Get_payer()->Get_name() << std::endl;
 
-	for (int j = 0; j < (*billiter)->Get_items().size(); ++j) { //Item data
-	  Item* item = (*billiter)->Get_item(j);
+	for (int j = 0; j < bill_vector[i]->Get_items().size(); ++j) { //Item data
+	  Item* item = bill_vector[i]->Get_item(j);
 	  std::cout << " -" << item->Get_name();
 
 	  for (int k = 0; k < item->Get_weights()->size(); ++k) { //Item weights
