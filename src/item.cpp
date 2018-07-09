@@ -56,3 +56,8 @@ std::vector<int> *Item::Get_weights()
 {
   return &weights;
 }
+
+void Item::resize_weights(int new_size)
+{
+  weights.resize(new_size);
+}
