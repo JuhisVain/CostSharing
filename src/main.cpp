@@ -3,6 +3,8 @@
 #include "payer.hpp"
 #include "allbills.hpp"
 
+void Modify_bill(Bill *bill, All_bills ab);
+
 int main()
 {
 
@@ -26,15 +28,18 @@ int main()
       std::cin >> input;
       
       in_payer->Set_name(input);
-
+      
+      /* //Paid should be calculated by bills paid TODO
+      // ps should only be calculated once all data input is in
       int cents_paid;
       
       std::cout << "Insert total paid: ";
       std::cin >> cents_paid;
 
       in_payer->Set_paid(cents_paid);
-
+      */
       //allbills.payers.push_back(in_payer);
+      
       allbills.New_payer(in_payer);
 
     } else if (input == "2") {
@@ -69,7 +74,7 @@ int main()
       allbills.New_bill(in_bill);
 
 
-
+      input = "xxx";
       while (input != "2") {
 	std::cout << "1) New item" << std::endl;
 	std::cout << "2) Back" << std::endl;
@@ -105,38 +110,53 @@ int main()
       }
       
     } else if (input == "3") {
-      std::cout << "Bills / Payers";
+      input = "x";
 
-      //std::list<Payer*>::iterator payiter = allbills.payers.begin();
-      std::vector<Payer*> payer_vector = allbills.Get_payers();
+      while (input != "exit") {
+	
+	std::cout << "Bills / Payers";
+
+	std::vector<Payer*> payer_vector = allbills.Get_payers();
       
-      for (int i = 0; i < payer_vector.size(); ++i) { //Payer names
-	std::cout << "\t" << payer_vector[i]->Get_name();
-      }
-      std::cout << std::endl;
-
-      //std::list<Bill*>::iterator billiter = allbills.bills.begin();
-      std::vector<Bill*> bill_vector = allbills.Get_bills();
-      
-      for (int i = 0; i < bill_vector.size(); ++i) { //Bill data
-	std::cout << bill_vector[i]->Get_name() << "Paid by "
-		  << bill_vector[i]->Get_payer()->Get_name() << std::endl;
-
-	for (int j = 0; j < bill_vector[i]->Get_items().size(); ++j) { //Item data
-	  Item* item = bill_vector[i]->Get_item(j);
-	  std::cout << " -" << item->Get_name();
-
-	  for (int k = 0; k < item->Get_weights()->size(); ++k) { //Item weights
-	    std::cout << "\t" << (*item->Get_weights())[k]; 
-	  }
-	  std::cout << std::endl;
-	  
+	for (int i = 0; i < payer_vector.size(); ++i) { //Payer names
+	  std::cout << "\t" << payer_vector[i]->Get_name();
 	}
 	std::cout << std::endl;
+
+	std::vector<Bill*> bill_vector = allbills.Get_bills();
+      
+	for (int i = 0; i < bill_vector.size(); ++i) { //Bill data
+	  std::cout << bill_vector[i]->Get_name() << " Paid by "
+		    << bill_vector[i]->Get_payer()->Get_name() << std::endl;
+
+	  for (int j = 0; j < bill_vector[i]->Get_items().size(); ++j) { //Item data
+	    Item* item = bill_vector[i]->Get_item(j);
+	    std::cout << " -" << item->Get_name();
+
+	    for (int k = 0; k < item->Get_weights()->size(); ++k) { //Item weights
+	      std::cout << "\t" << (*item->Get_weights())[k]; 
+	    }
+	    std::cout << std::endl;
+	  
+	  }
+	  std::cout << std::endl;
 	
+	}
+
+	std::cout << "Type name of bill to modify" << std::endl
+		  << "type \"exit\" to go back" << std::endl;
+
+	std::cin >> input;
+
+	for (int i = 0; i < bill_vector.size(); ++i) {
+	  if (input == bill_vector[i]->Get_name()) {
+	    Modify_bill(bill_vector[i], allbills);
+	  }
+	}
+
       }
       
-    }
+    } //input 3
 
     
 
@@ -144,4 +164,75 @@ int main()
   }
   std::cout << "" << std::endl;
 
+}
+
+void Modify_bill(Bill *bill, All_bills ab)
+{
+
+  std::string input = "x";
+  
+  std::cout << "n) name    : " << bill->Get_name() << std::endl
+	    << "p) paid by : " << bill->Get_payer()->Get_name() << std::endl;
+  
+  std::vector<Item*> items = bill->Get_items();
+  for (int i = 0; i < items.size(); ++i) {
+    std::cout << i << ") item    : " << items[i]->Get_name() << " : "
+	      << items[i]->Get_price() << " c";
+
+    for (int j = 0; j < items[i]->Get_weights()->size(); ++j) {
+      std::cout << "\t" << (*items[i]->Get_weights())[j];
+    }
+    std::cout << std::endl;
+  }
+
+  std::cin >> input;
+
+  if (input == "n") {
+    std::cout << "Input new name for bill: ";
+    std::cin >> input;
+    bill->Set_name(input);
+    return;
+  } else if (input == "p") {
+
+    std::vector<Payer*> payers = ab.Get_payers();
+    for (int i = 0; i < Payer::Get_total_payers(); ++i) {
+      std::cout << i << ") " << payers[i]->Get_name() << std::endl;
+    }
+    std::cout << "Input who paid for this bill: ";
+    std::cin >> input;
+
+    bill->Set_payer(payers[std::stoi(input)]);
+    return;
+  } else {
+    if (std::stoi(input) >= items.size()) {
+      std::cout << "No such item!" << std::endl;
+      return;
+    }
+
+    Item *moditem = items[std::stoi(input)];
+    int pw;
+    
+    std::cout << "(p)rice or (w)eight: ";
+    std::cin >> input;
+    if (input == "p") {
+      std::cout << "Input new price: ";
+      std::cin >> pw;
+      moditem->Set_price(pw);
+      
+    } else if (input == "w") {
+      for (int i = 0; i < Payer::Get_total_payers(); ++i) {
+	std::cout << "Input new weights one at a time: " << std::endl;
+	std::cin >> pw;
+	moditem->Set_weight(i,pw);
+      }
+    } else {
+      std::cout << "wrong input" << std::endl;
+      return;
+    }
+
+    
+    
+    
+  }
+  
 }
