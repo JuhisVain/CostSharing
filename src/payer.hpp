@@ -13,6 +13,7 @@ public:
   void Set_name(std::string& name);
   std::string Get_name();
   void Set_paid(int paid);
+  void Add_paid(int add);
   int Get_paid();
   void Set_topay(int new_topay);
   int Get_topay();

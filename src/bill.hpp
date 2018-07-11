@@ -19,7 +19,7 @@ public:
   Item *Get_item(int index);
 
   int Get_total_price();
-  void Finalize();
+  void Update_payer_paid();
   
   
 private:

@@ -57,6 +57,22 @@ std::vector<int> *Item::Get_weights()
   return &weights;
 }
 
+
+std::vector<int> Item::Get_shares() 
+{
+  //weight * price / weighttotal = weighted price:
+  std::vector<int> shares(weights); //copy
+  int weight_total = 0;
+  for(int i = 0; i < shares.size(); ++i) {
+    weight_total += shares[i];
+    shares[i] *= price; 
+  }
+  for (int i = 0; i < shares.size(); ++i) {
+    shares[i] /= weight_total;
+  }
+  return shares;
+}
+
 void Item::resize_weights(int new_size)
 {
   weights.resize(new_size);

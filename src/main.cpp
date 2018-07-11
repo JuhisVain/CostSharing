@@ -136,7 +136,7 @@ int main()
 	    for (int k = 0; k < item->Get_weights()->size(); ++k) { //Item weights
 	      std::cout << "\t" << (*item->Get_weights())[k]; 
 	    }
-	    std::cout << std::endl;
+	    std::cout << "\t" << item->Get_price() << " cents" << std::endl;
 	  
 	  }
 	  std::cout << std::endl;
@@ -156,10 +156,13 @@ int main()
 
       }
       
-    } //input 3
+    } else if (input == "4") {
 
-    
+      allbills.Calculate();
 
+      
+      
+    }
 
   }
   std::cout << "" << std::endl;

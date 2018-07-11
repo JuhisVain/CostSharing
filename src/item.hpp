@@ -14,6 +14,7 @@ public:
   int Get_price();
   void Set_weight(int index, int weight);
   std::vector<int> *Get_weights();
+  std::vector<int> Get_shares();
   void resize_weights(int new_size);
 
 private:

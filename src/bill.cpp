@@ -57,7 +57,7 @@ int Bill::Get_total_price()
   return total;
 }
 
-void Finalize()
+void Bill::Update_payer_paid()
 {
-  
+  bill_payer->Add_paid(Get_total_price());
 }

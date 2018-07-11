@@ -55,6 +55,11 @@ int Payer::Get_paid()
   return total_paid;
 }
 
+void Payer::Add_paid(int add)
+{
+  total_paid += add;
+}
+
 void Payer::Set_topay(int new_topay)
 {
   to_pay = new_topay;
