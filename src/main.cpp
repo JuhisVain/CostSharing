@@ -1,12 +1,27 @@
 #include <iostream>
 
+#include <qt/QtWidgets/QMainWindow>
+#include <qt/QtWidgets/QApplication>
+
 #include "payer.hpp"
 #include "allbills.hpp"
+#include "ui_test.hpp"
 
 void Modify_bill(Bill *bill, All_bills ab);
 
-int main()
+int main(int argc, char **argv)
 {
+
+  QApplication app(argc,argv);
+  Ui_MainWindow test_gui;
+  //test_gui.show();
+  QMainWindow testmw;
+  test_gui.setupUi(&testmw);
+  testmw.show();
+  app.exec();
+  return 0;
+
+  //test out
 
   All_bills allbills;
 
