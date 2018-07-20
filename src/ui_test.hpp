@@ -132,6 +132,54 @@ private:
   QTabWidget *my_tabwidget;
 };
 
+
+//Popup window when double clicking bill tab to rename bill
+class Rename_window : public QWidget
+{
+  Q_OBJECT
+
+private:
+  QVBoxLayout *layout;
+  QLineEdit *name_edit;
+  QPushButton *button;
+
+public:
+  Rename_window(QString name, QWidget *tab_to_rename) : QWidget()
+  {
+    std::cout << "rename_window constructed!" << std::endl;
+      
+    layout = new QVBoxLayout(this);
+    name_edit = new QLineEdit(this);
+    button = new QPushButton(this);
+
+    name_edit->setPlaceholderText(name);
+    layout->addWidget(name_edit);
+    layout->addWidget(button);
+
+    QObject::connect(name_edit, SIGNAL(textChanged(QString)),
+		     tab_to_rename, SLOT(rename(QString)));
+    QObject::connect(button, SIGNAL(clicked()), this, SLOT(Delete_window()));
+
+    this->show();
+  }
+
+  ~Rename_window()
+  {
+    std::cout << "DESTROY Rename_window" << std::endl;
+    delete layout;
+    delete name_edit;
+    delete button;
+  }
+
+public slots:
+  void Delete_window()
+  {
+    delete this;
+  }
+  
+};
+
+
 //
 class cosh_TabWidget : public QTabWidget
 {
@@ -163,24 +211,7 @@ public slots:
     QString to_rename = this->tabText(index);
     QWidget *tab = this->widget(index);
 
-    QWidget *rename_window = new QWidget();
-
-    QVBoxLayout *verticalLayout = new QVBoxLayout(rename_window);
-    verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
-    
-    QLineEdit *name_edit = new QLineEdit(rename_window);
-    name_edit->setPlaceholderText(to_rename);
-    QPushButton *ok_button = new QPushButton(rename_window);
-
-    ok_button->setObjectName(QStringLiteral("OK"));
-
-    verticalLayout->addWidget(name_edit);
-    verticalLayout->addWidget(ok_button);
-
-    QObject::connect(name_edit, SIGNAL(textChanged(QString)), tab, SLOT(rename(QString)));
-    //QObject::connect(ok_button, SIGNAL(clicked()), name_edit, SLOT()); //make this close the window OR just remove whole button
-    
-    rename_window->show();
+    Rename_window *popup = new Rename_window(to_rename, tab);
 
   }
 
@@ -310,7 +341,10 @@ private:
   cosh_NewBillTab *new_bill_tab;
   std::vector<cosh_TableWidget*> table_v;
   std::vector<QString> payers;
-  
+
+  //Error: Meta object features not supported for nested class
+  //what's a meta object feature?
+  //Denested class Rename_window
 };
 
 //
