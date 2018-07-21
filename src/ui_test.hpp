@@ -11,7 +11,9 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QFrame>
+#include <QList>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
@@ -27,6 +29,8 @@
 
 #include <vector>
 #include <iostream>
+
+#include "control.hpp"
 
 QT_BEGIN_NAMESPACE
 
@@ -146,8 +150,6 @@ private:
 public:
   Rename_window(QString name, QWidget *tab_to_rename) : QWidget()
   {
-    std::cout << "rename_window constructed!" << std::endl;
-      
     layout = new QVBoxLayout(this);
     name_edit = new QLineEdit(this);
     button = new QPushButton(this);
@@ -165,7 +167,6 @@ public:
 
   ~Rename_window()
   {
-    std::cout << "DESTROY Rename_window" << std::endl;
     delete layout;
     delete name_edit;
     delete button;
@@ -240,6 +241,7 @@ public slots:
   }
 
   //This will add a new payer's name to the column headers of all bills' itemtables:
+  //Update: Also adds the name to billpayer combobox of already existing bills
   void  Rename_columns(QString col_name)
   {
 
@@ -250,11 +252,17 @@ public slots:
 
     payers.push_back(col_name);
 
+    QList<QComboBox*> combo_boxes = this->findChildren<QComboBox*>("BillPayerCombo");
+    QList<QComboBox*>::iterator combo_iter = combo_boxes.begin();
+
     for (int i = 0; i < this->count()-1; ++i) {  //-1 for the new tab tab
 
       QTableWidgetItem *to_rename = table_v[i]->horizontalHeaderItem(table_v[i]->columnCount()-1);
-
       to_rename->setText(col_name);
+
+      (*combo_iter)->addItem(QString());
+      (*combo_iter)->setItemText((*combo_iter)->count()-1, col_name);
+      ++combo_iter;
 
     }
   }
@@ -273,6 +281,8 @@ public slots:
       QPushButton *AddItemButton;
       cosh_TableWidget *tableWidget;
 
+      QComboBox *BillPayerCombo;
+
       verticalLayout_3 = new QVBoxLayout(new_tab);
       verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
       frame_2 = new QFrame(new_tab);
@@ -286,6 +296,10 @@ public slots:
       AddItemButton->setGeometry(QRect(10, 10, 90, 28));
 
       verticalLayout_3->addWidget(frame_2);
+
+      BillPayerCombo = new QComboBox(frame_2);
+      BillPayerCombo->setObjectName(QStringLiteral("BillPayerCombo"));
+      BillPayerCombo->setGeometry(QRect(200,12,69,24));
 
       tableWidget = new cosh_TableWidget(new_tab);
       if (tableWidget->columnCount() < 2) {
@@ -306,11 +320,15 @@ public slots:
       //setHorizontalHeaderItem does !!NOT!! increase columncount
       tableWidget->setColumnCount(tableWidget->columnCount()+payers.size());
       for (int i = 0; i < payers.size(); ++i) {
+	//Columns:
 	QTableWidgetItem *tableitem = new QTableWidgetItem();
 	font.setBold(false);
 	tableitem->setFont(font);
 	tableWidget->setHorizontalHeaderItem(i+2, tableitem);
 	tableitem->setText(payers[i]);
+	//Populate combobox:
+	BillPayerCombo->addItem(QString());
+	BillPayerCombo->setItemText(i,payers[i]);
       }
 
       verticalLayout_3->addWidget(tableWidget);

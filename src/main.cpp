@@ -12,6 +12,8 @@ void Modify_bill(Bill *bill, All_bills ab);
 int main(int argc, char **argv)
 {
 
+  if (argc == 1) { //Poor man's arg parsing
+    
   QApplication app(argc,argv);
   Ui_MainWindow test_gui;
   //test_gui.show();
@@ -21,7 +23,7 @@ int main(int argc, char **argv)
   app.exec();
   return 0;
 
-  //test out
+  }
 
   All_bills allbills;
 

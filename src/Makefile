@@ -645,7 +645,12 @@ moc_predefs.h: /usr/lib/qt/mkspecs/features/data/dummy.cpp
 compiler_moc_header_make_all: moc_ui_test.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_ui_test.cpp
-moc_ui_test.cpp: ui_test.hpp \
+moc_ui_test.cpp: control.hpp \
+		allbills.hpp \
+		payer.hpp \
+		bill.hpp \
+		item.hpp \
+		ui_test.hpp \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/juho/Puuhailu/cpp/cppproj/CostSharing/src -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.1.1 -I/usr/include/c++/8.1.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.1.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include-fixed -I/usr/include ui_test.hpp -o moc_ui_test.cpp
@@ -670,7 +675,8 @@ main.o: main.cpp payer.hpp \
 		allbills.hpp \
 		bill.hpp \
 		item.hpp \
-		ui_test.hpp
+		ui_test.hpp \
+		control.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 allbills.o: allbills.cpp allbills.hpp \
