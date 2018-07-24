@@ -34,50 +34,8 @@
 
 QT_BEGIN_NAMESPACE
 
-//
-class cosh_TableWidget : public QTableWidget
-{
-  Q_OBJECT
-  
-public:
-  cosh_TableWidget(QWidget *owner) : QTableWidget(owner) {}
+static Control controller;
 
-public slots:
-  void Add_row()
-  {
-    setRowCount(rowCount()+1);
-  }
-
-  void Add_column()
-  {
-    setColumnCount(columnCount()+1);
-
-    QFont font;
-    font.setWeight(75);
-    font.setBold(false);
-
-    QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
-    __qtablewidgetitem->setFont(font);
-    this->setHorizontalHeaderItem(columnCount()-1, __qtablewidgetitem);
-    
-    emit PayerNameSignal();
-  }
-
-  void Rename_column(QString col_name)
-  {
-    if (col_name.isNull()) {
-      col_name = "XXX";
-    }
-
-    QTableWidgetItem *to_rename = this->horizontalHeaderItem(this->columnCount()-1);
-      
-    to_rename->setText(col_name);
-  }
-
-signals:
-  void PayerNameSignal();
-  
-};
 
 //
 class cosh_LineEdit : public QLineEdit
@@ -120,7 +78,17 @@ class cosh_Tab : public QWidget
 public:
   cosh_Tab(QTabWidget *owner) :QWidget()
   {
-    my_tabwidget = owner;
+    my_tabwidget = owner; 
+  }
+
+  void Link_bill(Bill *link)
+  {
+    linked_bill = link;
+  }
+
+  Bill* Get_bill()
+  {
+    return linked_bill;
   }
 
 public slots:
@@ -130,11 +98,92 @@ public slots:
     std::cout << "rename(QString)" << std::endl;
     this->setObjectName(new_name);
     my_tabwidget->setTabText(my_tabwidget->indexOf(this),new_name);
+    
+    controller.Rename_bill(linked_bill, (new_name.toStdString()));
+
+  }
+
+  void handleCell(QTableWidgetItem *handle)
+  {
+    if (handle->column() == 0) { //Name column
+
+      controller.Rename_item(linked_bill, handle->row(),
+			     (handle->text().toStdString()));
+      
+    } else if (handle->column() == 1) { //Price column
+
+      QObject::disconnect(this->findChild<QTableWidget*>("tableWidget"),
+			  SIGNAL(itemChanged(QTableWidgetItem*)),
+			  this, SLOT(handleCell(QTableWidgetItem*)));
+      
+      handle->setText(QString::fromStdString(
+	      controller.Reprice_item(
+				      linked_bill, handle->row(),(handle->text().toStdString()))
+				     ));
+      
+      QObject::connect(this->findChild<QTableWidget*>("tableWidget"),
+		       SIGNAL(itemChanged(QTableWidgetItem*)),
+		       this, SLOT(handleCell(QTableWidgetItem*)));
+      
+    } else {}
   }
 
 private:
-  QTabWidget *my_tabwidget;
+  QTabWidget *my_tabwidget; //This should have been just done with parent()?
+  Bill *linked_bill;
 };
+
+
+
+//
+class cosh_TableWidget : public QTableWidget
+{
+  Q_OBJECT
+  
+public:
+  cosh_TableWidget(QWidget *owner) : QTableWidget(owner) {}
+
+public slots:
+  void Add_row()
+  {
+    controller.New_item(((cosh_Tab*)parent())->Get_bill());
+    setRowCount(rowCount()+1);
+  }
+
+  void Add_column()
+  {
+    setColumnCount(columnCount()+1);
+
+    QFont font;
+    font.setWeight(75);
+    font.setBold(false);
+
+    QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
+    __qtablewidgetitem->setFont(font);
+    this->setHorizontalHeaderItem(columnCount()-1, __qtablewidgetitem);
+    
+    emit PayerNameSignal();
+  }
+
+  void Rename_column(QString col_name)
+  {
+    if (col_name.isNull()) {
+      col_name = "XXX";
+    }
+
+    //controller.New_payer(col_name.toStdString());
+
+    QTableWidgetItem *to_rename = this->horizontalHeaderItem(this->columnCount()-1);
+      
+    to_rename->setText(col_name);
+  }
+
+signals:
+  void PayerNameSignal();
+  
+};
+
+
 
 
 //Popup window when double clicking bill tab to rename bill
@@ -250,6 +299,8 @@ public slots:
       col_name = "XXX";
     }
 
+    controller.New_payer(col_name.toStdString());
+
     payers.push_back(col_name);
 
     QList<QComboBox*> combo_boxes = this->findChildren<QComboBox*>("BillPayerCombo");
@@ -275,6 +326,8 @@ public slots:
     
       cosh_Tab *new_tab = new cosh_Tab(this);
       new_tab->setObjectName(QStringLiteral("Bill"));
+
+      new_tab->Link_bill(controller.New_bill());
 
       QVBoxLayout *verticalLayout_3;
       QFrame *frame_2;
@@ -343,6 +396,8 @@ public slots:
       __qtablewidgetitem1->setText(QApplication::translate("MainWindow", "Price", nullptr));
 
       QObject::connect(AddItemButton, SIGNAL(clicked()), tableWidget, SLOT(Add_row())); //New item
+      QObject::connect(tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),
+		       new_tab, SLOT(handleCell(QTableWidgetItem*)));
 
       QMetaObject::connectSlotsByName(this);
             
@@ -428,21 +483,12 @@ public:
         MainWindow->setStatusBar(statusbar);
 
         retranslateUi(MainWindow);
-        //QObject::connect(AddItemButton, SIGNAL(clicked()), tableWidget, SLOT(Add_row())); //New item
 
 	QObject::connect(tabWidget, SIGNAL(tabBarClicked(int)), tabWidget, SLOT(Add_tab(int))); //New bill
 	QObject::connect(tabWidget, SIGNAL(tabBarDoubleClicked(int)), tabWidget, SLOT(Rename_tab(int))); //Rename bill
-	
-        //QObject::connect(lineEdit, SIGNAL(returnPressed()), tableWidget, SLOT(clearContents()));
-	
-        //QObject::connect(addPayerButton, SIGNAL(clicked()), tableWidget, SLOT(Add_column())); //New payer
 	QObject::connect(addPayerButton, SIGNAL(clicked()), tabWidget, SLOT(Update_payer_columns())); //New payer
 	QObject::connect(tabWidget, SIGNAL(PayerNameSignal()), lineEdit, SLOT(PayerNameCalled()));
 	QObject::connect(lineEdit, SIGNAL(SendName(QString)), tabWidget, SLOT(Rename_columns(QString)));
-	
-	//QObject::connect(tableWidget, SIGNAL(PayerNameSignal()), lineEdit, SLOT(PayerNameCalled()));
-
-	//QObject::connect(lineEdit, SIGNAL(SendName(QString)), tableWidget, SLOT(Rename_column(QString)));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

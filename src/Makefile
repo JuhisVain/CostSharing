@@ -54,12 +54,14 @@ SOURCES       = main.cpp \
 		allbills.cpp \
 		bill.cpp \
 		item.cpp \
-		payer.cpp moc_ui_test.cpp
+		payer.cpp \
+		control.cpp moc_ui_test.cpp
 OBJECTS       = main.o \
 		allbills.o \
 		bill.o \
 		item.o \
 		payer.o \
+		control.o \
 		moc_ui_test.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -233,11 +235,13 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		bill.hpp \
 		item.hpp \
 		payer.hpp \
-		ui_test.hpp main.cpp \
+		ui_test.hpp \
+		control.hpp main.cpp \
 		allbills.cpp \
 		bill.cpp \
 		item.cpp \
-		payer.cpp
+		payer.cpp \
+		control.cpp
 QMAKE_TARGET  = CostSharing
 DESTDIR       = 
 TARGET        = CostSharing
@@ -609,8 +613,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents allbills.hpp bill.hpp item.hpp payer.hpp ui_test.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp allbills.cpp bill.cpp item.cpp payer.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents allbills.hpp bill.hpp item.hpp payer.hpp ui_test.hpp control.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp allbills.cpp bill.cpp item.cpp payer.cpp control.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -695,6 +699,13 @@ item.o: item.cpp item.hpp
 
 payer.o: payer.cpp payer.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o payer.o payer.cpp
+
+control.o: control.cpp control.hpp \
+		allbills.hpp \
+		payer.hpp \
+		bill.hpp \
+		item.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o control.o control.cpp
 
 moc_ui_test.o: moc_ui_test.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ui_test.o moc_ui_test.cpp
