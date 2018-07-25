@@ -8,23 +8,29 @@
 #include "ui_test.hpp"
 
 void Modify_bill(Bill *bill, All_bills ab);
+Control controller;
 
 int main(int argc, char **argv)
 {
 
   if (argc == 1) { //Poor man's arg parsing
+
+    std::cout << "QT" << std::endl;
     
-  QApplication app(argc,argv);
-  Ui_MainWindow test_gui;
-  //test_gui.show();
-  QMainWindow testmw;
-  test_gui.setupUi(&testmw);
-  testmw.show();
-  app.exec();
-  return 0;
+    QApplication app(argc,argv);
+    Ui_MainWindow test_gui;
+    //test_gui.show();
+    QMainWindow testmw;
+    test_gui.setupUi(&testmw);
+    testmw.show();
+    app.exec();
+    return 0;
 
   }
 
+
+  std::cout << "CLI" << std::endl;
+  
   All_bills allbills;
 
   std::string input;

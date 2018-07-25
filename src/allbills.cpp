@@ -4,10 +4,12 @@
 
 All_bills::All_bills()
 {
+  std::cout << "All_bills session START" << std::endl;
 }
 
 void All_bills::New_payer(Payer *new_payer)
 {
+  std::cout << "all_bills::new_payer" << std::endl;
   payers.push_back(new_payer);
 
   Resize_item_weights(Payer::Get_total_payers());
@@ -33,7 +35,9 @@ std::vector<Payer*> All_bills::Get_payers()
 
 void All_bills::New_bill(Bill *new_bill)
 {
+  std::cout << "All_bills::new_bill(newbill) ->";;
   bills.push_back(new_bill);
+  std::cout << "bills size now: " << bills.size() << std::endl;
 }
 
 std::list<Bill*>::iterator All_bills::Get_bill_iterator()
@@ -117,13 +121,22 @@ void All_bills::Calculate()
 void All_bills::Resize_item_weights(int new_size)
 {
 
+  std::cout << "all_bills::resize item weights (" << new_size << ")" << std::endl;
+  std::cout << "bill list size: " << bills.size() << std::endl;
+  
   for ( std::list<Bill*>::iterator bill_iter = Get_bill_iterator();
 	bill_iter != bills.end(); ++bill_iter) {
+
+    std::cout << "Handling bill:" << (*bill_iter)->Get_name() << std::endl;
     
     std::vector<Item*> item_vector = (*bill_iter)->Get_items();
+    std::cout << " -item vector size:" << item_vector.size() << std::endl;
     
     for (int i = 0; i < item_vector.size(); ++i) {
+      std::cout << i;
       item_vector[i]->resize_weights(new_size);
     }
   }
+
+  std::cout << std::endl;
 }

@@ -33,6 +33,10 @@ void Bill::Set_payer(Payer *new_payer)
 
 Item* Bill::New_item()
 {
+
+  std::cout << "bill::newitem()" << std::endl;
+  
+  
   Item *nitem = new Item(Payer::Get_total_payers());
   items.push_back(nitem);
   return nitem;

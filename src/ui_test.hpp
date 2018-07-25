@@ -34,7 +34,7 @@
 
 QT_BEGIN_NAMESPACE
 
-static Control controller;
+extern Control controller; //4 hours down the drain
 
 
 //
@@ -112,20 +112,26 @@ public slots:
       
     } else if (handle->column() == 1) { //Price column
 
+      //func called after every letter:
+      //itemChanged signal + setText = carnage, disable it temporarily:
       QObject::disconnect(this->findChild<QTableWidget*>("tableWidget"),
 			  SIGNAL(itemChanged(QTableWidgetItem*)),
 			  this, SLOT(handleCell(QTableWidgetItem*)));
       
       handle->setText(QString::fromStdString(
 	      controller.Reprice_item(
-				      linked_bill, handle->row(),(handle->text().toStdString()))
-				     ));
+		  linked_bill, handle->row(),(handle->text().toStdString()))
+      ));
       
       QObject::connect(this->findChild<QTableWidget*>("tableWidget"),
 		       SIGNAL(itemChanged(QTableWidgetItem*)),
 		       this, SLOT(handleCell(QTableWidgetItem*)));
       
-    } else {}
+    } else { //Weight columns
+      handle->setText(QString::fromStdString(
+	      controller.Reweight_item(linked_bill, handle->row(),handle->column()-2,
+				       (handle->text().toStdString()))));
+    }
   }
 
 private:

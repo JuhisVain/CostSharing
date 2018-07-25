@@ -45,11 +45,21 @@ int Item::Get_price()
 
 void Item::Set_weight(int index, int weight)
 {
+
+  std::cout << "item::set_weight(" << index << "," << weight << ")" << std::endl;
+  std::cout << "Weights vector size = " << weights.size() << std::endl;
+  
   if (index < weights.size() && index >= 0) {
     weights[index] = weight;
   } else {
+    std::cout << "item set weight index error" << std::endl;
     //tilt
   }
+}
+
+int Item::Get_weight(int index)
+{
+  return weights[index];
 }
 
 std::vector<int> *Item::Get_weights()
@@ -75,5 +85,9 @@ std::vector<int> Item::Get_shares()
 
 void Item::resize_weights(int new_size)
 {
+  std::cout << "ITEM " <<name<< " IS RESIZED FROM " << weights.size()
+		    <<" TO ";
   weights.resize(new_size);
+
+  std::cout << weights.size() << std::endl;
 }
