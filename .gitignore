@@ -4,3 +4,4 @@ test.data
 CostSharing
 *.o
 *#
+.qmake.stash
