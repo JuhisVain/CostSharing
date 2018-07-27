@@ -82,9 +82,12 @@ void All_bills::Calculate()
 
      //Total cost of bill added to billpayer's total paid:
     (*bill_iter)->Update_payer_paid();
+
+    std::cout << "update payer paid" << std::endl;
     
     std::vector<Item*> items = (*bill_iter)->Get_items();
     std::vector<Payer*> payers_v = Get_payers();
+
 
     std::cout << std::setw(12);
     std::cout  << "item\\payer" << std::setw(12) << " ";

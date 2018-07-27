@@ -23,6 +23,8 @@ public:
   std::string Reprice_item(Bill *bill, int index, std::string price);
   std::string Reweight_item(Bill *bill, int item_index,
 			    int weight_index, std::string weight);
+  void Set_billpayer(std::string name, Bill *bill);
+  void Calculate();
 
 private:
   All_bills allbills;

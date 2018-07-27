@@ -26,9 +26,7 @@ Payer* Bill::Get_payer()
 
 void Bill::Set_payer(Payer *new_payer)
 {
-  //bill_payer->Set_paid(bill_payer->Get_paid()-Get_total_price()); //calc at end
   bill_payer = new_payer;
-  //new_payer->Set_paid(new_payer->Get_paid()+Get_total_price());
 }
 
 Item* Bill::New_item()

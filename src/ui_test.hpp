@@ -134,6 +134,16 @@ public slots:
     }
   }
 
+  
+  void Set_billpayer(QString payer_name)
+  {
+
+    std::cout << "Tab's set_billpayer(" << payer_name.toStdString() << ")" <<std::endl;
+    
+    controller.Set_billpayer(payer_name.toStdString(), linked_bill);
+  }
+
+
 private:
   QTabWidget *my_tabwidget; //This should have been just done with parent()?
   Bill *linked_bill;
@@ -404,8 +414,17 @@ public slots:
       QObject::connect(AddItemButton, SIGNAL(clicked()), tableWidget, SLOT(Add_row())); //New item
       QObject::connect(tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),
 		       new_tab, SLOT(handleCell(QTableWidgetItem*)));
+      /*QObject::connect(BillPayerCombo, SIGNAL(currentIndexChanged(QString)),
+		       new_tab, SLOT(Set_billpayer(QString )));
+      */
+      QObject::connect(BillPayerCombo, SIGNAL(currentTextChanged(QString)),
+		       new_tab, SLOT(Set_billpayer(QString )));
 
       QMetaObject::connectSlotsByName(this);
+
+      //Force payer for new tab's bill
+      BillPayerCombo->setCurrentIndex(0);
+      new_tab->Set_billpayer(BillPayerCombo->currentText());
             
       this->addTab(new_tab, QString());
 
@@ -414,6 +433,13 @@ public slots:
       this->tabBar()->moveTab(nbt_index,nbt_index+1);
       this->setCurrentIndex(indexOf(new_bill_tab)-1);
     }
+  }
+
+  void Calculate()
+  {
+    std::cout << "controller calculate" << std::endl;
+    
+    controller.Calculate();
   }
 
 private:
@@ -436,7 +462,7 @@ public:
     cosh_NewBillTab *new_bill_tab;
     QFrame *frame;
     QPushButton *addPayerButton;
-    QPushButton *pushButton_3;
+    QPushButton *calculateButton;
     cosh_LineEdit *lineEdit;
     QMenuBar *menubar;
     QStatusBar *statusbar;
@@ -470,9 +496,9 @@ public:
         addPayerButton = new QPushButton(frame);
         addPayerButton->setObjectName(QStringLiteral("addPayerButton"));
         addPayerButton->setGeometry(QRect(10, 60, 90, 28));
-        pushButton_3 = new QPushButton(frame);
-        pushButton_3->setObjectName(QStringLiteral("pushButton_3"));
-        pushButton_3->setGeometry(QRect(840, 30, 90, 28));
+        calculateButton = new QPushButton(frame);
+        calculateButton->setObjectName(QStringLiteral("calculateButton"));
+        calculateButton->setGeometry(QRect(840, 30, 90, 28));
         lineEdit = new cosh_LineEdit(frame);
         lineEdit->setObjectName(QStringLiteral("lineEdit"));
         lineEdit->setGeometry(QRect(10, 20, 171, 28));
@@ -496,6 +522,8 @@ public:
 	QObject::connect(tabWidget, SIGNAL(PayerNameSignal()), lineEdit, SLOT(PayerNameCalled()));
 	QObject::connect(lineEdit, SIGNAL(SendName(QString)), tabWidget, SLOT(Rename_columns(QString)));
 
+	QObject::connect(calculateButton, SIGNAL(clicked()), tabWidget, SLOT(Calculate()));
+
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
@@ -504,7 +532,7 @@ public:
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(new_bill_tab), QApplication::translate("MainWindow", "+", nullptr));
         addPayerButton->setText(QApplication::translate("MainWindow", "Add payer", nullptr));
-        pushButton_3->setText(QApplication::translate("MainWindow", "Calculate", nullptr));
+        calculateButton->setText(QApplication::translate("MainWindow", "Calculate", nullptr));
         lineEdit->setPlaceholderText(QApplication::translate("MainWindow", "New payer name", nullptr));
     } // retranslateUi
 

@@ -151,3 +151,25 @@ std::string Control::Reweight_item(Bill *bill, int item_index,
   
   return (std::to_string(bill->Get_item(item_index)->Get_weight(weight_index)));
 }
+
+void Control::Set_billpayer(std::string name, Bill *bill)
+{
+  std::vector<Payer*> payers = allbills.Get_payers();
+
+  for (int i = 0; i < payers.size(); ++i) {
+    if (payers[i]->Get_name() == name) {
+      bill->Set_payer(payers[i]);
+      return;
+    }
+  }
+
+  std::cout << "No " << name << " for "
+	    << bill->Get_name() << " found in payers"
+	    << std::endl;
+  
+}
+
+void Control::Calculate()
+{
+  allbills.Calculate();
+}
