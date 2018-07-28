@@ -84,3 +84,24 @@ int Payer::Get_id()
 {
   return id;
 }
+
+void Payer::Set_owed_to(int cents)
+{
+  Set_topay(-cents);
+  //owed_to = cents;
+}
+void Payer::Add_to_owed_to(int cents)
+{
+  Add_topay(-cents);
+  //owed_to += cents;
+}
+int Payer::Get_owed_to()
+{
+  return -Get_topay();
+  //return owed_to;
+}
+
+void Payer::Balance_accounts()
+{
+  
+}

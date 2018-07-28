@@ -26,6 +26,8 @@ private:
   std::list<Payer*> payers;
   std::list<Bill*> bills;
 
+  int all_bills_total;
+
   void Resize_item_weights(int new_size);
   
 };

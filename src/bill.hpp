@@ -18,6 +18,9 @@ public:
   std::vector<Item*> Get_items();
   Item *Get_item(int index);
 
+  void Reset_owed();
+  void Add_to_owed(Payer *ower, int owed_cents);
+
   int Get_total_price();
   void Update_payer_paid();
   
@@ -26,6 +29,8 @@ private:
   std::string name; //Name of store or whatever
   Payer *bill_payer; //Who paid for this bill
   std::vector<Item*> items;
+
+  int payer_owed;
 
 };
 

@@ -50,6 +50,22 @@ Item* Bill::Get_item(int index)
   return items[index];
 }
 
+void Bill::Reset_owed()
+{
+  payer_owed = 0;
+}
+
+void Bill::Add_to_owed(Payer *ower, int owed_cents)
+{
+  if (ower != bill_payer) {
+    payer_owed += owed_cents;
+    ower->Add_topay(owed_cents);
+    bill_payer->Add_to_owed_to(owed_cents);
+  } else {
+
+  }
+}
+
 int Bill::Get_total_price()
 {
   int total = 0;

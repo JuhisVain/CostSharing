@@ -18,6 +18,11 @@ public:
   void Set_topay(int new_topay);
   int Get_topay();
   int Add_topay(int addpay);
+  void Set_owed_to(int cents);
+  void Add_to_owed_to(int cents);
+  int Get_owed_to();
+
+  void Balance_accounts();
 
   static int Get_total_payers();
 
@@ -29,6 +34,7 @@ private:
   static int total_payers;
   int total_paid; //Cents
   int to_pay;
+  // int owed_to; //This is actually just a negative to_pay
   
 };
 

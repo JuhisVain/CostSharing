@@ -62,17 +62,18 @@ void All_bills::Calculate()
   //Let's make sure payers' moneydata is initialized to 0:
   for (std::list<Payer*>::iterator payer_iter = payers.begin();
        payer_iter != payers.end(); ++payer_iter) {
-
-    if ( (*payer_iter)->Get_paid() ) std::cout << "DEBUG-total paid not 0" << std::endl;
-    if ( (*payer_iter)->Get_topay() ) std::cout << "DEBUG-to pay not 0" << std::endl;
-
+    
     (*payer_iter)->Set_paid(0);
     (*payer_iter)->Set_topay(0);
-
+    //(*payer_iter)->Set_owed_to(0);
   }
+
+  all_bills_total = 0; // Reset total cost of everything
 
   for (std::list<Bill*>::iterator bill_iter = bills.begin();
        bill_iter != bills.end(); ++bill_iter) {
+
+    (*bill_iter)->Reset_owed(); //In case we're recalculating
 
     std::cout << std::endl << (*bill_iter)->Get_name() << ": "
 	      << (*bill_iter)->Get_total_price() << " cents"
@@ -80,14 +81,13 @@ void All_bills::Calculate()
 	      << (*bill_iter)->Get_payer()->Get_name()
 	      << std::endl;
 
+    all_bills_total += (*bill_iter)->Get_total_price();
+
      //Total cost of bill added to billpayer's total paid:
     (*bill_iter)->Update_payer_paid();
 
-    std::cout << "update payer paid" << std::endl;
-    
     std::vector<Item*> items = (*bill_iter)->Get_items();
     std::vector<Payer*> payers_v = Get_payers();
-
 
     std::cout << std::setw(12);
     std::cout  << "item\\payer" << std::setw(12) << " ";
@@ -103,7 +103,8 @@ void All_bills::Calculate()
       
       std::vector<int> shares = items[i]->Get_shares();
       for (int pi = 0; pi < payers_v.size(); ++pi) {
-	payers_v[pi]->Add_topay(shares[pi]);
+	//payers_v[pi]->Add_topay(shares[pi]);
+	(*bill_iter)->Add_to_owed(payers_v[pi], shares[pi]);
 
 	std::cout << std::setw(12) << shares[pi];
       }
@@ -111,13 +112,17 @@ void All_bills::Calculate()
   }
 
   std::cout << std::endl << std::setw(12) << " "
-	    << std::setw(12) << "totalhere";
+	    << std::setw(12) << all_bills_total;
   for (std::list<Payer*>::iterator pit = payers.begin();
        pit != payers.end(); ++pit) {
     std::cout << std::setw(12) << (*pit)->Get_topay();
   }
 
+
   std::cout << std::endl;
+
+
+  
   
 }
 
