@@ -256,9 +256,6 @@ void Modify_bill(Bill *bill, All_bills ab)
       return;
     }
 
-    
-    
-    
   }
   
 }

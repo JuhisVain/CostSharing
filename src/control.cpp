@@ -169,7 +169,13 @@ void Control::Set_billpayer(std::string name, Bill *bill)
   
 }
 
-void Control::Calculate()
+std::vector<int> Control::Calculate()
 {
-  allbills.Calculate();
+  std::cout << "control clears vector" << std::endl;
+  
+  output.clear();
+  std::cout << "cleared" << std::endl;
+
+  output = allbills.Calculate();
+  return output;
 }

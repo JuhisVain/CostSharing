@@ -157,7 +157,40 @@ class cosh_TableWidget : public QTableWidget
   Q_OBJECT
   
 public:
-  cosh_TableWidget(QWidget *owner) : QTableWidget(owner) {}
+  cosh_TableWidget(QWidget *owner) : QTableWidget(owner)
+  {
+    has_final = false;
+  }
+  int Add_final() //For computed shares
+  {
+    Remove_final();
+
+    std::cout << "Add_final() called, rowcount= " << rowCount() << std::endl;
+    
+    has_final = true;
+    setRowCount(rowCount()+1);
+
+    std::cout << "set rowcount= " << rowCount() << std::endl;
+
+    //????? Not only will this create items of rowCount-1 line,
+    //but all the other rows' items as well.
+    //Dont know what happens to the apparently existing items of
+    //name and price columns...
+    for (int i = 0; i < columnCount(); ++i) {
+      setItem(rowCount()-1, i, new QTableWidgetItem());
+    }
+    
+    std::cout << "returning: " << rowCount()-1 << std::endl;
+
+    return rowCount()-1; //Final line index
+  }
+  void Remove_final()
+  {
+    if (has_final) {
+      has_final = false;
+      setRowCount(rowCount()-1);
+    }
+  }
 
 public slots:
   void Add_row()
@@ -196,6 +229,9 @@ public slots:
 
 signals:
   void PayerNameSignal();
+
+private:
+  bool has_final;
   
 };
 
@@ -439,7 +475,58 @@ public slots:
   {
     std::cout << "controller calculate" << std::endl;
     
-    controller.Calculate();
+    std::vector<int> computed = controller.Calculate();
+
+    std::cout << "vector computed" << std::endl;
+
+    
+
+    //Make new line with computed values on every billtab:
+    for (std::vector<cosh_TableWidget*>::iterator table_iter = table_v.begin();
+	 table_iter != table_v.end(); ++table_iter) {
+
+      QObject::disconnect(*table_iter,
+			  SIGNAL(itemChanged(QTableWidgetItem*)),
+			  (*table_iter)->parent(),
+			  SLOT(handleCell(QTableWidgetItem*)));
+
+      std::cout << "table from "
+		<< ((cosh_Tab*) ((*table_iter)->parent()))->Get_bill()->Get_name()
+		<< std::endl;
+
+      int line_index = (*table_iter)->Add_final();
+
+      std::cout << "lineindex: " << line_index << std::endl;
+      
+      QTableWidgetItem *item_handle = (*table_iter)->item(line_index, 0);
+
+      for (int i = 0; i < (*table_iter)->columnCount(); ++i) {
+	for (int j = 0; j < (*table_iter)->rowCount(); ++j) {
+	  std::cout << j << "," << i << ": " << ((void*)((*table_iter)->item(j,i))) << std::endl;
+	}
+      }
+
+      std::cout << "address of itemhandle " << ((void*)item_handle) << std::endl;
+      std::cout << "Rows in table: " << (*table_iter)->rowCount() << std::endl;
+      std::cout << "Columns in table: " << (*table_iter)->columnCount() << std::endl;
+      
+      item_handle->setText(QStringLiteral("TOTAL"));
+      
+      std::cout << "set text" << std::endl;
+      for (int i = 0; i < computed.size(); ++i) {
+	item_handle = (*table_iter)->item(line_index, i+1);
+	QString str = QString::number(computed[i]);
+	str.insert(str.size()-2,QString("."));
+	item_handle->setText(str);
+      }
+
+      QObject::connect(*table_iter,
+		       SIGNAL(itemChanged(QTableWidgetItem*)),
+		       (*table_iter)->parent(),
+		       SLOT(handleCell(QTableWidgetItem*)));
+      
+    }
+      
   }
 
 private:

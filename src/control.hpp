@@ -9,7 +9,8 @@
 #include <iostream>
 #include <list>
 #include <string>
-#include <cstring>
+#include <vector>
+
 
 class Control
 {
@@ -24,10 +25,11 @@ public:
   std::string Reweight_item(Bill *bill, int item_index,
 			    int weight_index, std::string weight);
   void Set_billpayer(std::string name, Bill *bill);
-  void Calculate();
+  std::vector<int> Calculate();
 
 private:
   All_bills allbills;
+  std::vector<int> output;
 
 };
 

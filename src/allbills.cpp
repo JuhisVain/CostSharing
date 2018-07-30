@@ -56,7 +56,7 @@ std::vector<Bill*> All_bills::Get_bills()
   return bill_vector;
 }
 
-void All_bills::Calculate()
+std::vector<int> All_bills::Calculate()
 {
 
   //Let's make sure payers' moneydata is initialized to 0:
@@ -113,16 +113,18 @@ void All_bills::Calculate()
 
   std::cout << std::endl << std::setw(12) << " "
 	    << std::setw(12) << all_bills_total;
+
+  std::vector<int> to_pays;
+  to_pays.push_back(all_bills_total);
+  
   for (std::list<Payer*>::iterator pit = payers.begin();
        pit != payers.end(); ++pit) {
     std::cout << std::setw(12) << (*pit)->Get_topay();
+    to_pays.push_back((*pit)->Get_topay());
   }
 
-
   std::cout << std::endl;
-
-
-  
+  return to_pays;
   
 }
 

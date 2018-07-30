@@ -19,7 +19,7 @@ public:
   std::list<Bill*>::iterator Get_bill_iterator();
   std::vector<Bill*> Get_bills();
 
-  void Calculate();
+  std::vector<int> Calculate();
 
 private:
   //These should prolly have been vectors
