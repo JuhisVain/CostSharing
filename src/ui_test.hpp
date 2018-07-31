@@ -30,6 +30,7 @@
 #include <vector>
 #include <iostream>
 
+
 #include "control.hpp"
 
 QT_BEGIN_NAMESPACE
@@ -49,6 +50,7 @@ public slots:
   void PayerNameCalled()
   {
     QString col_name = this->text();
+    this->clear();
     emit SendName(col_name);
   }
 
@@ -70,7 +72,7 @@ public:
 
 };
 
-//
+//A bill-tab for the tabwidget
 class cosh_Tab : public QWidget
 {
   Q_OBJECT
@@ -187,20 +189,41 @@ public:
   void Remove_final()
   {
     if (has_final) {
+      std::cout << "REMOVE FINAL" << std::endl;
       has_final = false;
       setRowCount(rowCount()-1);
+    }
+  }
+  void Nuke_finals()
+  {
+    /*
+    cosh_TableWidget *parent1 = (cosh_TableWidget*)parent();
+    cosh_TabWidget *parent2 = (cosh_TabWidget*)parent1->parent();
+    parent2->Nuke_all_finals();
+    */
+
+    if (has_final) {
+      std::cout << "Nuke finals called when has final" << std::endl;
+      QList<cosh_Tab*> tabs = parent()->parent()->findChildren<cosh_Tab*>();
+      std::cout << "Tabs size: " << tabs.size() << std::endl;
+      for (int i = 0; i < tabs.size(); ++i) {
+	std::cout << "i: " << i << std::endl;
+	((cosh_TableWidget*)(tabs[i]->findChild<QTableWidget*>()))->Remove_final();
+      }
     }
   }
 
 public slots:
   void Add_row()
   {
+    Nuke_finals(); //Rows are table specific: All tables need finalnuking
     controller.New_item(((cosh_Tab*)parent())->Get_bill());
     setRowCount(rowCount()+1);
   }
-
+  /*
   void Add_column()
   {
+    Remove_final(); //Columncount is global: func called for every table
     setColumnCount(columnCount()+1);
 
     QFont font;
@@ -213,7 +236,7 @@ public slots:
     
     emit PayerNameSignal();
   }
-
+*/
   void Rename_column(QString col_name)
   {
     if (col_name.isNull()) {
@@ -298,6 +321,13 @@ public:
     new_bill_tab = nbt;
   }
 
+  void Nuke_all_finals()
+  {
+    for (int i = 0; i < table_v.size(); ++i) { 
+      table_v[i]->Remove_final();
+    }
+  }
+
 signals:
   void PayerNameSignal();
 
@@ -319,6 +349,8 @@ public slots:
 
   void Update_payer_columns()
   {
+
+    Nuke_all_finals();
 
     std::cout << "Update_payer_columns" << std::endl;
     
@@ -450,9 +482,7 @@ public slots:
       QObject::connect(AddItemButton, SIGNAL(clicked()), tableWidget, SLOT(Add_row())); //New item
       QObject::connect(tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)),
 		       new_tab, SLOT(handleCell(QTableWidgetItem*)));
-      /*QObject::connect(BillPayerCombo, SIGNAL(currentIndexChanged(QString)),
-		       new_tab, SLOT(Set_billpayer(QString )));
-      */
+
       QObject::connect(BillPayerCombo, SIGNAL(currentTextChanged(QString)),
 		       new_tab, SLOT(Set_billpayer(QString )));
 
