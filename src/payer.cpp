@@ -10,7 +10,7 @@ Payer::Payer()
   std::cout << "PAYER() Total payers is now " << total_payers << std::endl;
   name = "temp";
   total_paid = 0;
-  to_pay = 0;
+  to_pay = int_fract(0);
 }
 
 Payer::Payer(std::string& new_name, int paid):
@@ -18,7 +18,7 @@ Payer::Payer(std::string& new_name, int paid):
 {
   id = total_payers++;
   std::cout << "PAYER(NAME PAID)Total payers is now " << total_payers << std::endl;
-  to_pay = 0;
+  to_pay = int_fract(0);
 }
 
 Payer::~Payer()
@@ -60,18 +60,20 @@ void Payer::Add_paid(int add)
   total_paid += add;
 }
 
-void Payer::Set_topay(int new_topay)
+void Payer::Set_topay(int_fract new_topay)
 {
   to_pay = new_topay;
 }
-int Payer::Get_topay()
+int_fract Payer::Get_topay()
 {
   return to_pay;
 }
 
-int Payer::Add_topay(int addpay)
+int_fract Payer::Add_topay(int_fract addpay)
 {
-  to_pay += addpay;
+  std::cout << "payer::add_topay: " << addpay << std::endl;
+  to_pay = to_pay + addpay;
+  std::cout << "to_pay now: " << to_pay << std::endl;
   return to_pay;
 }
 
@@ -85,19 +87,20 @@ int Payer::Get_id()
   return id;
 }
 
-void Payer::Set_owed_to(int cents)
+void Payer::Set_owed_to(int_fract cents)
 {
-  Set_topay(-cents);
+  Set_topay(cents*(-1));
   //owed_to = cents;
 }
-void Payer::Add_to_owed_to(int cents)
+void Payer::Add_to_owed_to(int_fract cents)
 {
-  Add_topay(-cents);
+  std::cout << "payer::add_to_owed_to: " << cents << std::endl;
+  Add_topay(cents*(-1)); //aka. " -cents "
   //owed_to += cents;
 }
-int Payer::Get_owed_to()
+int_fract Payer::Get_owed_to()
 {
-  return -Get_topay();
+  return Get_topay()*(-1);
   //return owed_to;
 }
 

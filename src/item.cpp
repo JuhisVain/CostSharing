@@ -10,6 +10,8 @@ Item::Item(int payer_count)
   name = "N/A";
   price = 0;
 
+  shares = NULL;
+
   std::cout << "weights size is " << weights.size() << std::endl;
   
   weights.resize(payer_count);
@@ -20,6 +22,7 @@ Item::Item(int payer_count)
     std::cout << "i=" << i << std::endl;
     weights[i] = 0;
   }
+
   std::cout << "DONE" << std::endl;
 }
 
@@ -68,17 +71,31 @@ std::vector<int> *Item::Get_weights()
 }
 
 
-std::vector<int> Item::Get_shares() 
+std::vector<int_fract> *Item::Get_shares() 
 {
   //weight * price / weighttotal = weighted price:
-  std::vector<int> shares(weights); //copy
-  int weight_total = 0;
-  for(int i = 0; i < shares.size(); ++i) {
-    weight_total += shares[i];
-    shares[i] *= price; 
+  //std::vector<int> shares(weights); //copy
+  if (shares) {
+    delete shares;
+    shares = NULL;
   }
-  for (int i = 0; i < shares.size(); ++i) {
-    shares[i] /= weight_total;
+  
+  shares = new std::vector<int_fract>;
+  for (int i = 0; i < weights.size(); ++i) {
+    std::cout << "Pushing to shares: " << weights[i]
+	      << ", fract: " << int_fract(weights[i]) << std::endl;
+    shares->push_back(int_fract(weights[i]));
+  }
+  
+  int weight_total = 0;
+  for(int i = 0; i < shares->size(); ++i) {
+    weight_total += weights[i];
+    int_fract *if_p = &(*shares)[i];
+    (*shares)[i] = (*if_p * price);
+  }
+  for (int i = 0; i < shares->size(); ++i) {
+    int_fract *if_p = &(*shares)[i];
+    (*shares)[i] = (*if_p / weight_total);
   }
   return shares;
 }

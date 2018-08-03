@@ -19,7 +19,7 @@ public:
   Item *Get_item(int index);
 
   void Reset_owed();
-  void Add_to_owed(Payer *ower, int owed_cents);
+  void Add_to_owed(Payer *ower, int_fract owed_cents);
 
   int Get_total_price();
   void Update_payer_paid();
@@ -30,7 +30,7 @@ private:
   Payer *bill_payer; //Who paid for this bill
   std::vector<Item*> items;
 
-  int payer_owed;
+  int_fract payer_owed;
 
 };
 

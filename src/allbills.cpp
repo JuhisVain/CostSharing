@@ -56,7 +56,7 @@ std::vector<Bill*> All_bills::Get_bills()
   return bill_vector;
 }
 
-std::vector<int> All_bills::Calculate()
+std::vector<int_fract> All_bills::Calculate()
 {
 
   //Let's make sure payers' moneydata is initialized to 0:
@@ -64,7 +64,7 @@ std::vector<int> All_bills::Calculate()
        payer_iter != payers.end(); ++payer_iter) {
     
     (*payer_iter)->Set_paid(0);
-    (*payer_iter)->Set_topay(0);
+    (*payer_iter)->Set_topay(int_fract(0));
     //(*payer_iter)->Set_owed_to(0);
   }
 
@@ -101,12 +101,12 @@ std::vector<int> All_bills::Calculate()
       std::cout << std::setw(12) << items[i]->Get_name()
 		<< std::setw(12) << items[i]->Get_price();
       
-      std::vector<int> shares = items[i]->Get_shares();
+      std::vector<int_fract> *shares = items[i]->Get_shares();
       for (int pi = 0; pi < payers_v.size(); ++pi) {
-	//payers_v[pi]->Add_topay(shares[pi]);
-	(*bill_iter)->Add_to_owed(payers_v[pi], shares[pi]);
+	
+	(*bill_iter)->Add_to_owed(payers_v[pi], (*shares)[pi]);
 
-	std::cout << std::setw(12) << shares[pi];
+	std::cout << std::setw(12) << (*shares)[pi];
       }
     } 
   }
@@ -114,8 +114,8 @@ std::vector<int> All_bills::Calculate()
   std::cout << std::endl << std::setw(12) << " "
 	    << std::setw(12) << all_bills_total;
 
-  std::vector<int> to_pays;
-  to_pays.push_back(all_bills_total);
+  std::vector<int_fract> to_pays;
+  to_pays.push_back(int_fract(all_bills_total));
   
   for (std::list<Payer*>::iterator pit = payers.begin();
        pit != payers.end(); ++pit) {

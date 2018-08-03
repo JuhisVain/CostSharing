@@ -30,7 +30,6 @@
 #include <vector>
 #include <iostream>
 
-
 #include "control.hpp"
 
 QT_BEGIN_NAMESPACE
@@ -505,7 +504,7 @@ public slots:
   {
     std::cout << "controller calculate" << std::endl;
     
-    std::vector<int> computed = controller.Calculate();
+    std::vector<int_fract> computed = controller.Calculate();
 
     std::cout << "vector computed" << std::endl;
 
@@ -545,8 +544,14 @@ public slots:
       std::cout << "set text" << std::endl;
       for (int i = 0; i < computed.size(); ++i) {
 	item_handle = (*table_iter)->item(line_index, i+1);
-	QString str = QString::number(computed[i]);
-	str.insert(str.size()-2,QString("."));
+	//QString str = QString::number(computed[i]);
+
+	std::string string_fract;
+	string_fract = computed[i].To_string();
+	
+	QString str = QString::fromStdString(string_fract);
+	
+	//str.insert(str.size()-2,QString("."));
 	item_handle->setText(str);
       }
 

@@ -169,7 +169,7 @@ void Control::Set_billpayer(std::string name, Bill *bill)
   
 }
 
-std::vector<int> Control::Calculate()
+std::vector<int_fract> Control::Calculate()
 {
   std::cout << "control clears vector" << std::endl;
   

@@ -55,13 +55,15 @@ SOURCES       = main.cpp \
 		bill.cpp \
 		item.cpp \
 		payer.cpp \
-		control.cpp moc_ui_test.cpp
+		control.cpp \
+		int_fract.cpp moc_ui_test.cpp
 OBJECTS       = main.o \
 		allbills.o \
 		bill.o \
 		item.o \
 		payer.o \
 		control.o \
+		int_fract.o \
 		moc_ui_test.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -236,12 +238,14 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		item.hpp \
 		payer.hpp \
 		ui_test.hpp \
-		control.hpp main.cpp \
+		control.hpp \
+		int_fract.hpp main.cpp \
 		allbills.cpp \
 		bill.cpp \
 		item.cpp \
 		payer.cpp \
-		control.cpp
+		control.cpp \
+		int_fract.cpp
 QMAKE_TARGET  = CostSharing
 DESTDIR       = 
 TARGET        = CostSharing
@@ -613,8 +617,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents allbills.hpp bill.hpp item.hpp payer.hpp ui_test.hpp control.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp allbills.cpp bill.cpp item.cpp payer.cpp control.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents allbills.hpp bill.hpp item.hpp payer.hpp ui_test.hpp control.hpp int_fract.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp allbills.cpp bill.cpp item.cpp payer.cpp control.cpp int_fract.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -652,6 +656,7 @@ compiler_moc_header_clean:
 moc_ui_test.cpp: control.hpp \
 		allbills.hpp \
 		payer.hpp \
+		int_fract.hpp \
 		bill.hpp \
 		item.hpp \
 		ui_test.hpp \
@@ -676,6 +681,7 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 ####### Compile
 
 main.o: main.cpp payer.hpp \
+		int_fract.hpp \
 		allbills.hpp \
 		bill.hpp \
 		item.hpp \
@@ -685,27 +691,35 @@ main.o: main.cpp payer.hpp \
 
 allbills.o: allbills.cpp allbills.hpp \
 		payer.hpp \
+		int_fract.hpp \
 		bill.hpp \
 		item.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o allbills.o allbills.cpp
 
 bill.o: bill.cpp payer.hpp \
+		int_fract.hpp \
 		bill.hpp \
 		item.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bill.o bill.cpp
 
-item.o: item.cpp item.hpp
+item.o: item.cpp item.hpp \
+		int_fract.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o item.o item.cpp
 
-payer.o: payer.cpp payer.hpp
+payer.o: payer.cpp payer.hpp \
+		int_fract.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o payer.o payer.cpp
 
 control.o: control.cpp control.hpp \
 		allbills.hpp \
 		payer.hpp \
+		int_fract.hpp \
 		bill.hpp \
 		item.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o control.o control.cpp
+
+int_fract.o: int_fract.cpp int_fract.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o int_fract.o int_fract.cpp
 
 moc_ui_test.o: moc_ui_test.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ui_test.o moc_ui_test.cpp

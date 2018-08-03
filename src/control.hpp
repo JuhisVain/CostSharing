@@ -10,6 +10,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include "int_fract.hpp"
 
 
 class Control
@@ -25,11 +26,11 @@ public:
   std::string Reweight_item(Bill *bill, int item_index,
 			    int weight_index, std::string weight);
   void Set_billpayer(std::string name, Bill *bill);
-  std::vector<int> Calculate();
+  std::vector<int_fract> Calculate();
 
 private:
   All_bills allbills;
-  std::vector<int> output;
+  std::vector<int_fract> output;
 
 };
 

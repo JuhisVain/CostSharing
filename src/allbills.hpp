@@ -5,6 +5,7 @@
 #include <vector>
 #include "payer.hpp"
 #include "bill.hpp"
+#include "int_fract.hpp"
 
 class All_bills
 {
@@ -19,7 +20,7 @@ public:
   std::list<Bill*>::iterator Get_bill_iterator();
   std::vector<Bill*> Get_bills();
 
-  std::vector<int> Calculate();
+  std::vector<int_fract> Calculate();
 
 private:
   //These should prolly have been vectors

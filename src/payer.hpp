@@ -2,6 +2,7 @@
 #define PAYER_H
 
 #include <string>
+#include "int_fract.hpp"
 
 class Payer
 {
@@ -15,12 +16,12 @@ public:
   void Set_paid(int paid);
   void Add_paid(int add);
   int Get_paid();
-  void Set_topay(int new_topay);
-  int Get_topay();
-  int Add_topay(int addpay);
-  void Set_owed_to(int cents);
-  void Add_to_owed_to(int cents);
-  int Get_owed_to();
+  void Set_topay(int_fract new_topay);
+  int_fract Get_topay();
+  int_fract Add_topay(int_fract addpay);
+  void Set_owed_to(int_fract cents);
+  void Add_to_owed_to(int_fract cents);
+  int_fract Get_owed_to();
 
   void Balance_accounts();
 
@@ -33,7 +34,7 @@ private:
   int id;
   static int total_payers;
   int total_paid; //Cents
-  int to_pay;
+  int_fract to_pay;
   // int owed_to; //This is actually just a negative to_pay
   
 };

@@ -52,13 +52,16 @@ Item* Bill::Get_item(int index)
 
 void Bill::Reset_owed()
 {
-  payer_owed = 0;
+  payer_owed = int_fract();
 }
 
-void Bill::Add_to_owed(Payer *ower, int owed_cents)
+void Bill::Add_to_owed(Payer *ower, int_fract owed_cents)
 {
   if (ower != bill_payer) {
-    payer_owed += owed_cents;
+    std::cout << "Add_to_owed(xx, " << owed_cents << " )" << std::endl;
+    std::cout << payer_owed << " + " << owed_cents << " = " << std::endl;
+    payer_owed = payer_owed + owed_cents;
+    std::cout << payer_owed << std::endl;
     ower->Add_topay(owed_cents);
     bill_payer->Add_to_owed_to(owed_cents);
   } else {
