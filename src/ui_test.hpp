@@ -112,13 +112,13 @@ public slots:
 
   void handleCell(QTableWidgetItem *handle)
   {
-    if (*my_table_has_final) {
-
+    if (*my_table_has_final) { //No fiddling with the totals row
       if (handle->row() == handle->tableWidget()->columnCount()-1) {
 	return;
       }
-    
-    } else if (handle->column() == 0) { //Name column
+    }
+
+    if (handle->column() == 0) { //Name column
 
       controller.Rename_item(linked_bill, handle->row(),
 			     (handle->text().toStdString()));
