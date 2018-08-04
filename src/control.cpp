@@ -176,6 +176,11 @@ std::vector<int_fract> Control::Calculate()
   output.clear();
   std::cout << "cleared" << std::endl;
 
+  if (allbills.No_payers()) {
+    std::cout << "No payers found!" << std::endl;
+    return output;
+  }
+
   output = allbills.Calculate();
   return output;
 }

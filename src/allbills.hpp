@@ -15,6 +15,7 @@ public:
   void New_payer(Payer *new_payer);
   std::list<Payer*>::iterator Get_payer_iterator();
   std::vector<Payer*> Get_payers();
+  bool No_payers();
   
   void New_bill(Bill *new_bill);
   std::list<Bill*>::iterator Get_bill_iterator();

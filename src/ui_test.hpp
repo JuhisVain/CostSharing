@@ -92,6 +92,12 @@ public:
     return linked_bill;
   }
 
+  //olololo
+  void Set_pointer_to_table_has_final_bool(bool *table_has_final)
+  {
+    my_table_has_final = table_has_final;
+  }
+
 public slots:
 
   void rename(QString new_name)
@@ -106,7 +112,13 @@ public slots:
 
   void handleCell(QTableWidgetItem *handle)
   {
-    if (handle->column() == 0) { //Name column
+    if (*my_table_has_final) {
+
+      if (handle->row() == handle->tableWidget()->columnCount()-1) {
+	return;
+      }
+    
+    } else if (handle->column() == 0) { //Name column
 
       controller.Rename_item(linked_bill, handle->row(),
 			     (handle->text().toStdString()));
@@ -148,6 +160,7 @@ public slots:
 private:
   QTabWidget *my_tabwidget; //This should have been just done with parent()?
   Bill *linked_bill;
+  bool *my_table_has_final; //...
 };
 
 
@@ -185,6 +198,16 @@ public:
 
     return rowCount()-1; //Final line index
   }
+
+  bool *Get_has_final_pointer() {
+    return &has_final;
+  }
+  
+  bool Has_final()
+  {
+    return has_final;
+  }
+  
   void Remove_final()
   {
     if (has_final) {
@@ -490,6 +513,8 @@ public slots:
       //Force payer for new tab's bill
       BillPayerCombo->setCurrentIndex(0);
       new_tab->Set_billpayer(BillPayerCombo->currentText());
+
+      new_tab->Set_pointer_to_table_has_final_bool(tableWidget->Get_has_final_pointer());
             
       this->addTab(new_tab, QString());
 
@@ -507,6 +532,10 @@ public slots:
     std::vector<int_fract> computed = controller.Calculate();
 
     std::cout << "vector computed" << std::endl;
+
+    if (computed.empty()) {
+      return;
+    }
 
     
 

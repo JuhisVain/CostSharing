@@ -32,6 +32,11 @@ std::vector<Payer*> All_bills::Get_payers()
   return payer_vector;
 }
 
+bool All_bills::No_payers()
+{
+  return payers.empty();
+}
+
 
 void All_bills::New_bill(Bill *new_bill)
 {

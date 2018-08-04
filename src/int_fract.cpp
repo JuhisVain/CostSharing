@@ -35,7 +35,6 @@ int_fract int_fract::operator*(const int number)
 
 int_fract int_fract::operator/(int number)
 {
-
   std::cout << "infra DIV for: " << *this << std::endl;
   /* wtf have i been doing in here
   denominator *= number;
@@ -45,6 +44,11 @@ int_fract int_fract::operator/(int number)
   remain *= denominator;
   nominator += remain;
   */
+
+  if (number == 0) {
+    std::cout << "Division by zero" << std::endl; //Weights total for item zero
+    number = 1;
+  }
 
   int remain = wholes % number;
   remain *= denominator;
