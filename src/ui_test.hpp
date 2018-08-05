@@ -24,6 +24,7 @@
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QLabel>
 
 #include <QMouseEvent>
 
@@ -303,6 +304,7 @@ public:
     name_edit->setPlaceholderText(name);
     layout->addWidget(name_edit);
     layout->addWidget(button);
+    button->setText(QString("Close"));
 
     QObject::connect(name_edit, SIGNAL(textChanged(QString)),
 		     tab_to_rename, SLOT(rename(QString)));
@@ -439,7 +441,7 @@ public slots:
       QFrame *frame_2;
       QPushButton *AddItemButton;
       cosh_TableWidget *tableWidget;
-
+      QLabel *paidByLabel;
       QComboBox *BillPayerCombo;
 
       verticalLayout_3 = new QVBoxLayout(new_tab);
@@ -456,9 +458,14 @@ public slots:
 
       verticalLayout_3->addWidget(frame_2);
 
+      paidByLabel = new QLabel(frame_2);
+      paidByLabel->setObjectName(QStringLiteral("paidbylabel"));
+      paidByLabel->setGeometry(QRect(150,10,50,24));
+      paidByLabel->setText(QString("Paid by:"));
+
       BillPayerCombo = new QComboBox(frame_2);
       BillPayerCombo->setObjectName(QStringLiteral("BillPayerCombo"));
-      BillPayerCombo->setGeometry(QRect(200,12,69,24));
+      BillPayerCombo->setGeometry(QRect(200,10,100,24));
 
       tableWidget = new cosh_TableWidget(new_tab);
       if (tableWidget->columnCount() < 2) {
@@ -670,6 +677,7 @@ public:
 	QObject::connect(tabWidget, SIGNAL(tabBarClicked(int)), tabWidget, SLOT(Add_tab(int))); //New bill
 	QObject::connect(tabWidget, SIGNAL(tabBarDoubleClicked(int)), tabWidget, SLOT(Rename_tab(int))); //Rename bill
 	QObject::connect(addPayerButton, SIGNAL(clicked()), tabWidget, SLOT(Update_payer_columns())); //New payer
+	QObject::connect(lineEdit, SIGNAL(returnPressed()), tabWidget, SLOT(Update_payer_columns()));
 	QObject::connect(tabWidget, SIGNAL(PayerNameSignal()), lineEdit, SLOT(PayerNameCalled()));
 	QObject::connect(lineEdit, SIGNAL(SendName(QString)), tabWidget, SLOT(Rename_columns(QString)));
 
