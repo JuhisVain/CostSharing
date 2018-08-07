@@ -184,3 +184,9 @@ std::vector<int_fract> Control::Calculate()
   output = allbills.Calculate();
   return output;
 }
+
+void Control::Save()
+{
+  std::ofstream savefile;
+  savefile.open("");
+}

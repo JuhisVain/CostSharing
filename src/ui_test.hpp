@@ -10,6 +10,7 @@
 #define _13HEINADCVWZU_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFrame>
@@ -17,6 +18,7 @@
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
@@ -25,6 +27,8 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
+
+#include <QtWidgets/QFileDialog>
 
 #include <QMouseEvent>
 
@@ -114,7 +118,6 @@ public slots:
   void handleCell(QTableWidgetItem *handle)
   {
     if (*my_table_has_final) { //No fiddling with the totals row
-      std::cout << "My table has final, handle row:" << handle->row() << " ==? cc:" << handle->tableWidget()->columnCount()-1 << std::endl;
       if (handle->row() == handle->tableWidget()->rowCount()-1) {
 	return;
       }
@@ -611,10 +614,32 @@ private:
   //Denested class Rename_window
 };
 
+class cosh_Action : public QAction
+{
+  Q_OBJECT
+  
+public:
+  cosh_Action(QObject *parent) : QAction(parent) {}
+
+public slots:
+  void save()
+  {
+    std::cout << "save called" << std::endl;
+
+    QString savefile = QFileDialog::getSaveFileName((QWidget*)parent());
+    
+  }
+
+};
+
 //
 class Ui_MainWindow
 {
 public:
+    cosh_Action *actionSave;
+    cosh_Action *actionLoad;
+    cosh_Action *actionNew;
+    cosh_Action *actionExit;
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout_2;
     cosh_TabWidget *tabWidget;
@@ -624,6 +649,8 @@ public:
     QPushButton *calculateButton;
     cosh_LineEdit *lineEdit;
     QMenuBar *menubar;
+    QMenu *menuFile;
+    //QMenu *menuSettings; //add later if needed
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -669,6 +696,31 @@ public:
         menubar->setObjectName(QStringLiteral("menubar"));
         menubar->setGeometry(QRect(0, 0, 1034, 22));
         MainWindow->setMenuBar(menubar);
+
+	std::cout << "Doing menus!" << std::endl;
+
+	actionNew = new cosh_Action(MainWindow);
+	actionLoad = new cosh_Action(MainWindow);
+	actionSave  = new cosh_Action(MainWindow);
+	actionExit  = new cosh_Action(MainWindow);
+
+	actionNew->setText(QStringLiteral("New"));
+	actionLoad->setText(QStringLiteral("Open"));
+	actionSave->setText(QStringLiteral("Save"));
+	actionExit->setText(QStringLiteral("Quit"));
+
+	menuFile = new QMenu(menubar);
+	menuFile->setObjectName(QStringLiteral("menuFile"));
+	menuFile->setTitle(QStringLiteral("File"));
+
+	menubar->addAction(menuFile->menuAction());
+        menuFile->addAction(actionNew);
+        menuFile->addAction(actionLoad);
+        menuFile->addSeparator();
+        menuFile->addAction(actionSave);
+        menuFile->addSeparator();
+        menuFile->addAction(actionExit);
+	
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QStringLiteral("statusbar"));
         MainWindow->setStatusBar(statusbar);
@@ -683,6 +735,8 @@ public:
 	QObject::connect(lineEdit, SIGNAL(SendName(QString)), tabWidget, SLOT(Rename_columns(QString)));
 
 	QObject::connect(calculateButton, SIGNAL(clicked()), tabWidget, SLOT(Calculate()));
+
+	QObject::connect(actionSave, SIGNAL(triggered()), actionSave, SLOT(save()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

@@ -7,6 +7,7 @@
 #include "item.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <string>
 #include <vector>
@@ -27,6 +28,8 @@ public:
 			    int weight_index, std::string weight);
   void Set_billpayer(std::string name, Bill *bill);
   std::vector<int_fract> Calculate();
+
+  void Save();
 
 private:
   All_bills allbills;
