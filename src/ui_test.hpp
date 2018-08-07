@@ -114,7 +114,8 @@ public slots:
   void handleCell(QTableWidgetItem *handle)
   {
     if (*my_table_has_final) { //No fiddling with the totals row
-      if (handle->row() == handle->tableWidget()->columnCount()-1) {
+      std::cout << "My table has final, handle row:" << handle->row() << " ==? cc:" << handle->tableWidget()->columnCount()-1 << std::endl;
+      if (handle->row() == handle->tableWidget()->rowCount()-1) {
 	return;
       }
     }
