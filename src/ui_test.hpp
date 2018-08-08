@@ -624,10 +624,14 @@ public:
 public slots:
   void save()
   {
-    std::cout << "save called" << std::endl;
-
     QString savefile = QFileDialog::getSaveFileName((QWidget*)parent());
-    
+    controller.Save(savefile.toStdString());
+  }
+  
+  void load()
+  {
+    QString loadfile = QFileDialog::getOpenFileName((QWidget*)parent());
+    controller.Load(loadfile.toStdString());
   }
 
 };
@@ -737,6 +741,7 @@ public:
 	QObject::connect(calculateButton, SIGNAL(clicked()), tabWidget, SLOT(Calculate()));
 
 	QObject::connect(actionSave, SIGNAL(triggered()), actionSave, SLOT(save()));
+	QObject::connect(actionLoad, SIGNAL(triggered()), actionLoad, SLOT(load()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

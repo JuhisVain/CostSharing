@@ -11,6 +11,7 @@ class All_bills
 {
 public:
   All_bills();
+  ~All_bills();
   
   void New_payer(Payer *new_payer);
   std::list<Payer*>::iterator Get_payer_iterator();

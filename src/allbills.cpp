@@ -7,6 +7,11 @@ All_bills::All_bills()
   std::cout << "All_bills session START" << std::endl;
 }
 
+All_bills::~All_bills()
+{
+  std::cout << "all_bills getting deleted" << std::endl;
+}
+
 void All_bills::New_payer(Payer *new_payer)
 {
   std::cout << "all_bills::new_payer" << std::endl;

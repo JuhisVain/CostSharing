@@ -29,11 +29,14 @@ public:
   void Set_billpayer(std::string name, Bill *bill);
   std::vector<int_fract> Calculate();
 
-  void Save();
+  void Save(std::string savefilename);
+  void Load(std::string loadfilename);
 
 private:
   All_bills allbills;
   std::vector<int_fract> output;
+
+  void Delete_everything();
 
 };
 

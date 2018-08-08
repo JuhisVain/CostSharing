@@ -185,8 +185,68 @@ std::vector<int_fract> Control::Calculate()
   return output;
 }
 
-void Control::Save()
+void Control::Save(std::string savefilename)
 {
   std::ofstream savefile;
-  savefile.open("");
+  savefile.open(savefilename, std::ofstream::out);
+
+  /* savefilename.txt {
+   * savefilename\n
+   * [payer count]\n
+   * [payer 0 name]\t[payer 1 name]\t...
+   * [bill 0 name]\t[item count in bill 0]\n
+   * [bill 0 payername]\n
+   * [item 0 name]\t[item 0 price]\n
+   * [item 0 weight 0]\t[item 0 weight 1]\t...\n
+   * ...
+   * [item count in bill 0+1]\n
+   * ...
+   * ...
+   * }
+   */
+
+  std::vector<Payer*> payers = allbills.Get_payers();
+
+  savefile << savefilename << "\n"
+	   << payers.size() << "\n";
+
+  for (int i = 0; i < payers.size(); ++i) {
+    savefile << payers[i]->Get_name() << "\t";
+  }
+  savefile << "\n";
+
+  std::vector<Bill*> bills = allbills.Get_bills();
+  
+  for (int bi = 0; bi < bills.size(); ++bi) {
+    std::vector<Item*> items = bills[bi]->Get_items();
+    savefile << bills[bi]->Get_name() << "\t"
+	     << items.size() << "\n";
+    savefile << bills[bi]->Get_payer()->Get_name() << "\n";
+
+    for (int it = 0; it < items.size(); ++it) {
+      savefile << items[it]->Get_name() << "\t"
+	       << items[it]->Get_price() << "\n";
+      std::vector<int> *weights = items[it]->Get_weights();
+
+      for (int we = 0; we < weights->size(); ++we) {
+	savefile << (*weights)[we] << "\t";
+      }
+      savefile << "\n" << std::endl;
+    }
+    
+  }
+  
+  savefile.close();
+}
+
+void Control::Load(std::string loadfilename)
+{
+  Delete_everything();
+  //Todo: the ui has to have stuff deleted too
+}
+
+void Control::Delete_everything()
+{
+  All_bills new_allbills;
+  allbills = new_allbills;
 }
