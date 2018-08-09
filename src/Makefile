@@ -56,7 +56,8 @@ SOURCES       = main.cpp \
 		item.cpp \
 		payer.cpp \
 		control.cpp \
-		int_fract.cpp moc_ui_test.cpp
+		int_fract.cpp moc_ui_test.cpp \
+		moc_cosh_Action.cpp
 OBJECTS       = main.o \
 		allbills.o \
 		bill.o \
@@ -64,7 +65,8 @@ OBJECTS       = main.o \
 		payer.o \
 		control.o \
 		int_fract.o \
-		moc_ui_test.o
+		moc_ui_test.o \
+		moc_cosh_Action.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
 		/usr/lib/qt/mkspecs/common/linux.conf \
@@ -239,7 +241,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		payer.hpp \
 		ui_test.hpp \
 		control.hpp \
-		int_fract.hpp main.cpp \
+		int_fract.hpp \
+		cosh_Action.hpp main.cpp \
 		allbills.cpp \
 		bill.cpp \
 		item.cpp \
@@ -617,7 +620,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents allbills.hpp bill.hpp item.hpp payer.hpp ui_test.hpp control.hpp int_fract.hpp $(DISTDIR)/
+	$(COPY_FILE) --parents allbills.hpp bill.hpp item.hpp payer.hpp ui_test.hpp control.hpp int_fract.hpp cosh_Action.hpp $(DISTDIR)/
 	$(COPY_FILE) --parents main.cpp allbills.cpp bill.cpp item.cpp payer.cpp control.cpp int_fract.cpp $(DISTDIR)/
 
 
@@ -650,10 +653,11 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/qt/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -march=x86-64 -mtune=generic -O2 -pipe -fstack-protector-strong -fno-plt -Wall -W -dM -E -o moc_predefs.h /usr/lib/qt/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_ui_test.cpp
+compiler_moc_header_make_all: moc_ui_test.cpp moc_cosh_Action.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_ui_test.cpp
-moc_ui_test.cpp: control.hpp \
+	-$(DEL_FILE) moc_ui_test.cpp moc_cosh_Action.cpp
+moc_ui_test.cpp: cosh_Action.hpp \
+		control.hpp \
 		allbills.hpp \
 		payer.hpp \
 		int_fract.hpp \
@@ -663,6 +667,17 @@ moc_ui_test.cpp: control.hpp \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/juho/Puuhailu/cpp/cppproj/CostSharing/src -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.1.1 -I/usr/include/c++/8.1.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.1.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include-fixed -I/usr/include ui_test.hpp -o moc_ui_test.cpp
+
+moc_cosh_Action.cpp: control.hpp \
+		allbills.hpp \
+		payer.hpp \
+		int_fract.hpp \
+		bill.hpp \
+		item.hpp \
+		cosh_Action.hpp \
+		moc_predefs.h \
+		/usr/bin/moc
+	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/juho/Puuhailu/cpp/cppproj/CostSharing/src -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.1.1 -I/usr/include/c++/8.1.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.1.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include-fixed -I/usr/include cosh_Action.hpp -o moc_cosh_Action.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -686,6 +701,7 @@ main.o: main.cpp payer.hpp \
 		bill.hpp \
 		item.hpp \
 		ui_test.hpp \
+		cosh_Action.hpp \
 		control.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
@@ -723,6 +739,9 @@ int_fract.o: int_fract.cpp int_fract.hpp
 
 moc_ui_test.o: moc_ui_test.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_ui_test.o moc_ui_test.cpp
+
+moc_cosh_Action.o: moc_cosh_Action.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_cosh_Action.o moc_cosh_Action.cpp
 
 ####### Install
 

@@ -2,28 +2,37 @@
 
 #include <qt/QtWidgets/QMainWindow>
 #include <qt/QtWidgets/QApplication>
+#include <qt/QtCore/QByteArray>
 
 #include "payer.hpp"
 #include "allbills.hpp"
 #include "ui_test.hpp"
+#include "cosh_Action.hpp"
+
+
 
 void Modify_bill(Bill *bill, All_bills ab);
 Control controller;
+
 
 int main(int argc, char **argv)
 {
 
   if (argc == 1) { //Poor man's arg parsing
 
+    const int RESTART = 666;
+
     std::cout << "QT" << std::endl;
-    
+
+  restart:
     QApplication app(argc,argv);
     Ui_MainWindow test_gui;
     //test_gui.show();
     QMainWindow testmw;
+    
     test_gui.setupUi(&testmw);
     testmw.show();
-    app.exec();
+    if (app.exec() == RESTART) goto restart;
     return 0;
 
   }

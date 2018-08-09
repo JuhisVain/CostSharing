@@ -27,6 +27,7 @@
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QLabel>
+#include <QtCore/QByteArray>
 
 #include <QtWidgets/QFileDialog>
 
@@ -35,6 +36,7 @@
 #include <vector>
 #include <iostream>
 
+#include "cosh_Action.hpp"
 #include "control.hpp"
 
 QT_BEGIN_NAMESPACE
@@ -74,6 +76,11 @@ public:
     std::cout << "NewBillTab constructor" << std::endl;
   }
 
+  ~cosh_NewBillTab()
+  {
+    std::cout << "Newbilltab DELETE!!!" << std::endl;
+  }
+
 };
 
 //A bill-tab for the tabwidget
@@ -85,6 +92,11 @@ public:
   cosh_Tab(QTabWidget *owner) :QWidget()
   {
     my_tabwidget = owner; 
+  }
+
+  ~cosh_Tab()
+  {
+    std::cout << "cosh_Tab DELETE" << std::endl;
   }
 
   void Link_bill(Bill *link)
@@ -613,13 +625,14 @@ private:
   //what's a meta object feature?
   //Denested class Rename_window
 };
-
+/*
 class cosh_Action : public QAction
 {
   Q_OBJECT
   
 public:
   cosh_Action(QObject *parent) : QAction(parent) {}
+  static QByteArray ui_default;
 
 public slots:
   void save()
@@ -627,14 +640,28 @@ public slots:
     QString savefile = QFileDialog::getSaveFileName((QWidget*)parent());
     controller.Save(savefile.toStdString());
   }
+
+  static void set_default_ui(QByteArray ui_state)
+  {
+    ui_default = ui_state;
+  }
   
   void load()
   {
+
+    ((QMainWindow*)parent())->restoreState(ui_default,0);
+    
     QString loadfile = QFileDialog::getOpenFileName((QWidget*)parent());
     controller.Load(loadfile.toStdString());
+
+    
+
   }
 
 };
+
+QByteArray cosh_Action::ui_default;
+*/
 
 //
 class Ui_MainWindow
@@ -731,19 +758,27 @@ public:
 
         retranslateUi(MainWindow);
 
-	QObject::connect(tabWidget, SIGNAL(tabBarClicked(int)), tabWidget, SLOT(Add_tab(int))); //New bill
-	QObject::connect(tabWidget, SIGNAL(tabBarDoubleClicked(int)), tabWidget, SLOT(Rename_tab(int))); //Rename bill
-	QObject::connect(addPayerButton, SIGNAL(clicked()), tabWidget, SLOT(Update_payer_columns())); //New payer
-	QObject::connect(lineEdit, SIGNAL(returnPressed()), tabWidget, SLOT(Update_payer_columns()));
-	QObject::connect(tabWidget, SIGNAL(PayerNameSignal()), lineEdit, SLOT(PayerNameCalled()));
-	QObject::connect(lineEdit, SIGNAL(SendName(QString)), tabWidget, SLOT(Rename_columns(QString)));
+	QObject::connect(tabWidget, SIGNAL(tabBarClicked(int)),
+			 tabWidget, SLOT(Add_tab(int))); //New bill
+	QObject::connect(tabWidget, SIGNAL(tabBarDoubleClicked(int)),
+			 tabWidget, SLOT(Rename_tab(int))); //Rename bill
+	QObject::connect(addPayerButton, SIGNAL(clicked()),
+			 tabWidget, SLOT(Update_payer_columns())); //New payer
+	QObject::connect(lineEdit, SIGNAL(returnPressed()),
+			 tabWidget, SLOT(Update_payer_columns()));
+	QObject::connect(tabWidget, SIGNAL(PayerNameSignal()),
+			 lineEdit, SLOT(PayerNameCalled()));
+	QObject::connect(lineEdit, SIGNAL(SendName(QString)),
+			 tabWidget, SLOT(Rename_columns(QString)));
 
-	QObject::connect(calculateButton, SIGNAL(clicked()), tabWidget, SLOT(Calculate()));
+	QObject::connect(calculateButton, SIGNAL(clicked()),
+			 tabWidget, SLOT(Calculate()));
 
 	QObject::connect(actionSave, SIGNAL(triggered()), actionSave, SLOT(save()));
 	QObject::connect(actionLoad, SIGNAL(triggered()), actionLoad, SLOT(load()));
 
         QMetaObject::connectSlotsByName(MainWindow);
+
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)

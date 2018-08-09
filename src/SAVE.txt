@@ -1,8 +1,0 @@
-/home/juho/Puuhailu/cpp/cppproj/CostSharing/src/SAVE.txt
-1
-sdf	
-Bill	1
-sdf
-ads	0
-0	
-
