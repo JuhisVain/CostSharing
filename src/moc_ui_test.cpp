@@ -513,8 +513,8 @@ int Rename_window::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     return _id;
 }
 struct qt_meta_stringdata_cosh_TabWidget_t {
-    QByteArrayData data[10];
-    char stringdata0[112];
+    QByteArrayData data[14];
+    char stringdata0[149];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -531,14 +531,18 @@ QT_MOC_LITERAL(4, 43, 5), // "index"
 QT_MOC_LITERAL(5, 49, 20), // "Update_payer_columns"
 QT_MOC_LITERAL(6, 70, 14), // "Rename_columns"
 QT_MOC_LITERAL(7, 85, 8), // "col_name"
-QT_MOC_LITERAL(8, 94, 7), // "Add_tab"
-QT_MOC_LITERAL(9, 102, 9) // "Calculate"
+QT_MOC_LITERAL(8, 94, 15), // "Repopulate_tabs"
+QT_MOC_LITERAL(9, 110, 7), // "Add_tab"
+QT_MOC_LITERAL(10, 118, 9), // "cosh_Tab*"
+QT_MOC_LITERAL(11, 128, 5), // "Bill*"
+QT_MOC_LITERAL(12, 134, 4), // "load"
+QT_MOC_LITERAL(13, 139, 9) // "Calculate"
 
     },
     "cosh_TabWidget\0PayerNameSignal\0\0"
     "Rename_tab\0index\0Update_payer_columns\0"
-    "Rename_columns\0col_name\0Add_tab\0"
-    "Calculate"
+    "Rename_columns\0col_name\0Repopulate_tabs\0"
+    "Add_tab\0cosh_Tab*\0Bill*\0load\0Calculate"
 };
 #undef QT_MOC_LITERAL
 
@@ -548,7 +552,7 @@ static const uint qt_meta_data_cosh_TabWidget[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       6,   14, // methods
+       8,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -556,14 +560,16 @@ static const uint qt_meta_data_cosh_TabWidget[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   44,    2, 0x06 /* Public */,
+       1,    0,   54,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       3,    1,   45,    2, 0x0a /* Public */,
-       5,    0,   48,    2, 0x0a /* Public */,
-       6,    1,   49,    2, 0x0a /* Public */,
-       8,    1,   52,    2, 0x0a /* Public */,
-       9,    0,   55,    2, 0x0a /* Public */,
+       3,    1,   55,    2, 0x0a /* Public */,
+       5,    0,   58,    2, 0x0a /* Public */,
+       6,    1,   59,    2, 0x0a /* Public */,
+       8,    0,   62,    2, 0x0a /* Public */,
+       9,    2,   63,    2, 0x0a /* Public */,
+       9,    1,   68,    2, 0x2a /* Public | MethodCloned */,
+      13,    0,   71,    2, 0x0a /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -572,7 +578,9 @@ static const uint qt_meta_data_cosh_TabWidget[] = {
     QMetaType::Void, QMetaType::Int,    4,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,    7,
-    QMetaType::Void, QMetaType::Int,    4,
+    QMetaType::Void,
+    0x80000000 | 10, QMetaType::Int, 0x80000000 | 11,    4,   12,
+    0x80000000 | 10, QMetaType::Int,    4,
     QMetaType::Void,
 
        0        // eod
@@ -588,8 +596,12 @@ void cosh_TabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 1: _t->Rename_tab((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 2: _t->Update_payer_columns(); break;
         case 3: _t->Rename_columns((*reinterpret_cast< QString(*)>(_a[1]))); break;
-        case 4: _t->Add_tab((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 5: _t->Calculate(); break;
+        case 4: _t->Repopulate_tabs(); break;
+        case 5: { cosh_Tab* _r = _t->Add_tab((*reinterpret_cast< int(*)>(_a[1])),(*reinterpret_cast< Bill*(*)>(_a[2])));
+            if (_a[0]) *reinterpret_cast< cosh_Tab**>(_a[0]) = std::move(_r); }  break;
+        case 6: { cosh_Tab* _r = _t->Add_tab((*reinterpret_cast< int(*)>(_a[1])));
+            if (_a[0]) *reinterpret_cast< cosh_Tab**>(_a[0]) = std::move(_r); }  break;
+        case 7: _t->Calculate(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
@@ -629,13 +641,13 @@ int cosh_TabWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 8)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 8;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 8)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 6;
+        _id -= 8;
     }
     return _id;
 }

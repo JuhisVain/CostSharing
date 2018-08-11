@@ -46,7 +46,12 @@ void Control::Rename_item(Bill *bill, int index, std::string name)
   bill->Get_item(index)->Set_name(name);
 }
 
-//return new price in large units as string
+void Control::Set_item_price(Bill *bill, int index, int cents)
+{
+  bill->Get_item(index)->Set_price(cents);
+}
+
+//returns new price in large units as string
 std::string Control::Reprice_item(Bill *bill, int index, std::string price)
 {
   std::cout << "Reprice item, row:" << index
@@ -242,7 +247,83 @@ void Control::Save(std::string savefilename)
 void Control::Load(std::string loadfilename)
 {
   Delete_everything();
-  //Todo: the ui has to have stuff deleted too
+
+  std::ifstream loadfile;
+  loadfile.open(loadfilename, std::ifstream::in);
+
+  std::string filepath;
+  loadfile >> filepath;
+  std::cout << "loading " << filepath << std::endl;
+
+  int payer_count = 0;
+  loadfile >> payer_count;
+  std::cout << "payer count: " << payer_count << ", names: ";
+
+  for (int i = 0; i < payer_count; ++i) {
+    std::string payer_name;
+    loadfile >> payer_name;
+    std::cout << payer_name << ", ";
+    New_payer(payer_name);
+  }
+
+  while (!loadfile.eof()) {
+    std::string billname;
+    loadfile >> billname;
+    if (loadfile.eof()) break;
+    std::cout << "Bill name: " << billname << std::endl;
+    Bill *loaded_bill = New_bill();
+    Rename_bill(loaded_bill, billname);
+
+    int item_count = 0;
+    loadfile >> item_count;
+    std::cout << "Item count: " << item_count << std::endl;
+
+    std::string bill_payer_name;
+    loadfile >> bill_payer_name;
+    std::cout << "Bill's payer: " << bill_payer_name << std::endl;
+    Set_billpayer(bill_payer_name, loaded_bill);
+    std::cout << "billpayer SET!" << std::endl;
+
+    for(int i = 0; i < item_count; ++i) {
+
+      New_item(loaded_bill);
+      std::string item_name;
+      loadfile >> item_name;
+      std::cout << "item name: " << item_name << std::endl;;
+      Rename_item(loaded_bill, i, item_name);
+
+      std::cout << "item renamed!" << std::endl;
+      
+      int item_price;
+      loadfile >> item_price;
+      std::cout << ", " << item_price << " cents" << std::endl;
+      /*
+      std::string modprice = std::to_string(item_price);
+      modprice.insert(modprice.size()-2,".");
+      */
+      Set_item_price(loaded_bill,i,item_price);
+      //Reprice_item(loaded_bill, i, modprice);
+
+      for (int payer_i = 0; payer_i < payer_count; ++payer_i) {
+	int payer_weight = 0;
+	loadfile >> payer_weight;
+	Reweight_item(loaded_bill, i, payer_i, std::to_string(payer_weight));
+      }
+      
+    }
+
+  }
+  
+  
+}
+
+std::vector<Payer*> Control::Get_payers()
+{
+  return allbills.Get_payers();
+}
+std::vector<Bill*> Control::Get_bills()
+{
+  return allbills.Get_bills();
 }
 
 void Control::Delete_everything()

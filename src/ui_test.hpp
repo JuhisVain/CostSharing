@@ -119,12 +119,13 @@ public slots:
 
   void rename(QString new_name)
   {
-    std::cout << "rename(QString)" << std::endl;
+    std::cout << "rename(" << new_name.toStdString() << std::endl;
+    std::cout << "MY ADDRESS IS : " << (void*)this << std::endl; // WTF
     this->setObjectName(new_name);
-    my_tabwidget->setTabText(my_tabwidget->indexOf(this),new_name);
-    
-    controller.Rename_bill(linked_bill, (new_name.toStdString()));
 
+    my_tabwidget->setTabText(my_tabwidget->indexOf(this),new_name);
+
+    controller.Rename_bill(linked_bill, (new_name.toStdString()));
   }
 
   void handleCell(QTableWidgetItem *handle)
@@ -259,30 +260,11 @@ public slots:
     controller.New_item(((cosh_Tab*)parent())->Get_bill());
     setRowCount(rowCount()+1);
   }
-  /*
-  void Add_column()
-  {
-    Remove_final(); //Columncount is global: func called for every table
-    setColumnCount(columnCount()+1);
-
-    QFont font;
-    font.setWeight(75);
-    font.setBold(false);
-
-    QTableWidgetItem *__qtablewidgetitem = new QTableWidgetItem();
-    __qtablewidgetitem->setFont(font);
-    this->setHorizontalHeaderItem(columnCount()-1, __qtablewidgetitem);
-    
-    emit PayerNameSignal();
-  }
-*/
   void Rename_column(QString col_name)
   {
     if (col_name.isNull()) {
       col_name = "XXX";
     }
-
-    //controller.New_payer(col_name.toStdString());
 
     QTableWidgetItem *to_rename = this->horizontalHeaderItem(this->columnCount()-1);
       
@@ -441,18 +423,97 @@ public slots:
 
     }
   }
-  
-  void Add_tab(int index) //New bill
+
+  void Repopulate_tabs()
+  {
+    
+    std::vector<Payer*> payer_vector = controller.Get_payers();
+    for (int i = 0; i < payer_vector.size(); ++i) {
+      std::string payername = payer_vector[i]->Get_name();
+      payers.push_back(QString::fromStdString(payername));
+    }
+
+    std::vector<Bill*> bills_vector = controller.Get_bills();
+    for (int i = 0; i < bills_vector.size(); ++i) {
+      cosh_Tab *tab = Add_tab(-1,bills_vector[i]); //Create a tab for a bill
+      tab->rename(QString::fromStdString(bills_vector[i]->Get_name()));
+      QComboBox * combo = tab->findChild<QComboBox*>();
+      cosh_TableWidget* table = tab->findChild<cosh_TableWidget*>();
+
+      
+      QObject::disconnect(combo, SIGNAL(currentTextChanged(QString)),
+		       tab, SLOT(Set_billpayer(QString )));
+
+      std::cout << "combo default index: " << combo->currentIndex() << std::endl;
+      std::cout << "Trying to find index for name: "
+		<< bills_vector[i]->Get_payer()->Get_name();
+
+      combo->setCurrentIndex(
+	  combo->findText(
+	      QString::fromStdString(bills_vector[i]->Get_payer()->Get_name())));
+
+      std::cout << "combo new index: " << combo->currentIndex() << std::endl;
+
+      
+      QObject::connect(combo, SIGNAL(currentTextChanged(QString)),
+		       tab, SLOT(Set_billpayer(QString )));
+      
+      QObject::disconnect(table, SIGNAL(itemChanged(QTableWidgetItem*)),
+		     tab, SLOT(handleCell(QTableWidgetItem*)));
+      
+      
+      std::vector<Item*> items_vector = bills_vector[i]->Get_items();
+      for (int j = 0; j < items_vector.size(); ++j) {
+	table->Add_row();
+	table->setItem(table->rowCount()-1,0,new QTableWidgetItem()); //Name column
+	table->item(table->rowCount()-1,0)
+	  ->setText(QString::fromStdString(items_vector[j]->Get_name()));
+	table->setItem(table->rowCount()-1,1,new QTableWidgetItem()); //Price column
+
+	std::string temp = std::to_string(items_vector[j]->Get_price());
+	while (temp.size() < 3) temp.insert(0,"0");
+	temp.insert(temp.size()-2,",");
+
+	table->item(table->rowCount()-1,1)
+	  ->setText(QString::fromStdString(temp));
+	//tab->handleCell(table->item(table->rowCount()-1,1));
+
+	for (int weight_i = 0; weight_i < payer_vector.size(); ++weight_i) {
+	  //Weight columns:
+	  table->setItem(table->rowCount()-1,weight_i+2,new QTableWidgetItem());
+	  table->item(table->rowCount()-1,weight_i+2)
+	    ->setText(QString::number(items_vector[j]->Get_weight(weight_i)));
+	}
+      }
+      
+      QObject::connect(table, SIGNAL(itemChanged(QTableWidgetItem*)),
+		     tab, SLOT(handleCell(QTableWidgetItem*)));
+      
+      QMetaObject::connectSlotsByName(tab);    
+
+    }
+
+
+    
+  }
+
+  //index used to check for new tab tab, load used when loading stored bills
+  cosh_Tab *Add_tab(int index, Bill* load = NULL) //New bill
   {
     std::cout << "tabwidget Add_tab() called with "<< index << std::endl;
+    std::cout << "index of new bill tab : " << indexOf(new_bill_tab) << std::endl;
 
-    if (index == indexOf(new_bill_tab)) { //Generate new bill
+    if (index == indexOf(new_bill_tab) || index == -1) { //Generate new bill
     
       cosh_Tab *new_tab = new cosh_Tab(this);
       new_tab->setObjectName(QStringLiteral("Bill"));
 
-      new_tab->Link_bill(controller.New_bill());
-
+      if (load) {
+	new_tab->Link_bill(load);
+      } else {
+	new_tab->Link_bill(controller.New_bill());
+      }
+	
       QVBoxLayout *verticalLayout_3;
       QFrame *frame_2;
       QPushButton *AddItemButton;
@@ -533,19 +594,28 @@ public slots:
 
       QMetaObject::connectSlotsByName(this);
 
+      /* Does bad things when loading file
       //Force payer for new tab's bill
       BillPayerCombo->setCurrentIndex(0);
       new_tab->Set_billpayer(BillPayerCombo->currentText());
+      */
 
       new_tab->Set_pointer_to_table_has_final_bool(tableWidget->Get_has_final_pointer());
             
       this->addTab(new_tab, QString());
 
-      this->setTabText(index+1,QStringLiteral("Bill"));
+      if (index != -1) {
+	this->setTabText(index+1,QStringLiteral("Bill"));
+      }
       int nbt_index = indexOf(new_bill_tab);
       this->tabBar()->moveTab(nbt_index,nbt_index+1);
       this->setCurrentIndex(indexOf(new_bill_tab)-1);
+
+      std::cout << "I will return : " << (void*)new_tab << std::endl;
+      return new_tab;
     }
+    std::cout << "I WILL RETURN NULL!" << std::endl;
+    return NULL;
   }
 
   void Calculate()
@@ -625,170 +695,142 @@ private:
   //what's a meta object feature?
   //Denested class Rename_window
 };
-/*
-class cosh_Action : public QAction
-{
-  Q_OBJECT
-  
-public:
-  cosh_Action(QObject *parent) : QAction(parent) {}
-  static QByteArray ui_default;
-
-public slots:
-  void save()
-  {
-    QString savefile = QFileDialog::getSaveFileName((QWidget*)parent());
-    controller.Save(savefile.toStdString());
-  }
-
-  static void set_default_ui(QByteArray ui_state)
-  {
-    ui_default = ui_state;
-  }
-  
-  void load()
-  {
-
-    ((QMainWindow*)parent())->restoreState(ui_default,0);
-    
-    QString loadfile = QFileDialog::getOpenFileName((QWidget*)parent());
-    controller.Load(loadfile.toStdString());
-
-    
-
-  }
-
-};
-
-QByteArray cosh_Action::ui_default;
-*/
 
 //
 class Ui_MainWindow
 {
 public:
-    cosh_Action *actionSave;
-    cosh_Action *actionLoad;
-    cosh_Action *actionNew;
-    cosh_Action *actionExit;
-    QWidget *centralwidget;
-    QVBoxLayout *verticalLayout_2;
-    cosh_TabWidget *tabWidget;
-    cosh_NewBillTab *new_bill_tab;
-    QFrame *frame;
-    QPushButton *addPayerButton;
-    QPushButton *calculateButton;
-    cosh_LineEdit *lineEdit;
-    QMenuBar *menubar;
-    QMenu *menuFile;
-    //QMenu *menuSettings; //add later if needed
-    QStatusBar *statusbar;
+  cosh_Action *actionSave;
+  cosh_Action *actionLoad;
+  cosh_Action *actionNew;
+  cosh_Action *actionExit;
+  QWidget *centralwidget;
+  QVBoxLayout *verticalLayout_2;
+  cosh_TabWidget *tabWidget;
+  cosh_NewBillTab *new_bill_tab;
+  QFrame *frame;
+  QPushButton *addPayerButton;
+  QPushButton *calculateButton;
+  cosh_LineEdit *lineEdit;
+  QMenuBar *menubar;
+  QMenu *menuFile;
+  //QMenu *menuSettings; //add later if needed
+  QStatusBar *statusbar;
 
-    void setupUi(QMainWindow *MainWindow)
-    {
-        if (MainWindow->objectName().isEmpty())
-            MainWindow->setObjectName(QStringLiteral("MainWindow"));
-        MainWindow->resize(1034, 774);
-        centralwidget = new QWidget(MainWindow);
-        centralwidget->setObjectName(QStringLiteral("centralwidget"));
-        verticalLayout_2 = new QVBoxLayout(centralwidget);
-        verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
-        tabWidget = new cosh_TabWidget(centralwidget);
-        tabWidget->setObjectName(QStringLiteral("tabWidget"));
+  void setupUi(QMainWindow *MainWindow)
+  {
+    if (MainWindow->objectName().isEmpty())
+      MainWindow->setObjectName(QStringLiteral("MainWindow"));
+    MainWindow->resize(1034, 774);
+    centralwidget = new QWidget(MainWindow);
+    centralwidget->setObjectName(QStringLiteral("centralwidget"));
+    verticalLayout_2 = new QVBoxLayout(centralwidget);
+    verticalLayout_2->setObjectName(QStringLiteral("verticalLayout_2"));
+    tabWidget = new cosh_TabWidget(centralwidget);
+    tabWidget->setObjectName(QStringLiteral("tabWidget"));
 	
-	tabWidget->Add_tab(0);
+    tabWidget->Add_tab(0);
 	
-        new_bill_tab = new cosh_NewBillTab();
-        new_bill_tab->setObjectName(QStringLiteral("New bill"));
-        tabWidget->addTab(new_bill_tab, QString());
-	tabWidget->SetupNewTabTab(new_bill_tab);
+    new_bill_tab = new cosh_NewBillTab();
+    new_bill_tab->setObjectName(QStringLiteral("New bill"));
+    tabWidget->addTab(new_bill_tab, QString());
+    tabWidget->SetupNewTabTab(new_bill_tab);
 
-        verticalLayout_2->addWidget(tabWidget);
+    verticalLayout_2->addWidget(tabWidget);
 
-        frame = new QFrame(centralwidget);
-        frame->setObjectName(QStringLiteral("frame"));
-        frame->setMinimumSize(QSize(0, 100));
-        frame->setFrameShape(QFrame::StyledPanel);
-        frame->setFrameShadow(QFrame::Raised);
-        addPayerButton = new QPushButton(frame);
-        addPayerButton->setObjectName(QStringLiteral("addPayerButton"));
-        addPayerButton->setGeometry(QRect(10, 60, 90, 28));
-        calculateButton = new QPushButton(frame);
-        calculateButton->setObjectName(QStringLiteral("calculateButton"));
-        calculateButton->setGeometry(QRect(840, 30, 90, 28));
-        lineEdit = new cosh_LineEdit(frame);
-        lineEdit->setObjectName(QStringLiteral("lineEdit"));
-        lineEdit->setGeometry(QRect(10, 20, 171, 28));
+    frame = new QFrame(centralwidget);
+    frame->setObjectName(QStringLiteral("frame"));
+    frame->setMinimumSize(QSize(0, 100));
+    frame->setFrameShape(QFrame::StyledPanel);
+    frame->setFrameShadow(QFrame::Raised);
+    addPayerButton = new QPushButton(frame);
+    addPayerButton->setObjectName(QStringLiteral("addPayerButton"));
+    addPayerButton->setGeometry(QRect(10, 60, 90, 28));
+    calculateButton = new QPushButton(frame);
+    calculateButton->setObjectName(QStringLiteral("calculateButton"));
+    calculateButton->setGeometry(QRect(840, 30, 90, 28));
+    lineEdit = new cosh_LineEdit(frame);
+    lineEdit->setObjectName(QStringLiteral("lineEdit"));
+    lineEdit->setGeometry(QRect(10, 20, 171, 28));
 
-        verticalLayout_2->addWidget(frame);
+    verticalLayout_2->addWidget(frame);
 
-        MainWindow->setCentralWidget(centralwidget);
-        menubar = new QMenuBar(MainWindow);
-        menubar->setObjectName(QStringLiteral("menubar"));
-        menubar->setGeometry(QRect(0, 0, 1034, 22));
-        MainWindow->setMenuBar(menubar);
+    MainWindow->setCentralWidget(centralwidget);
+    menubar = new QMenuBar(MainWindow);
+    menubar->setObjectName(QStringLiteral("menubar"));
+    menubar->setGeometry(QRect(0, 0, 1034, 22));
+    MainWindow->setMenuBar(menubar);
 
-	std::cout << "Doing menus!" << std::endl;
+    std::cout << "Doing menus!" << std::endl;
 
-	actionNew = new cosh_Action(MainWindow);
-	actionLoad = new cosh_Action(MainWindow);
-	actionSave  = new cosh_Action(MainWindow);
-	actionExit  = new cosh_Action(MainWindow);
+    actionNew = new cosh_Action(MainWindow);
+    actionLoad = new cosh_Action(MainWindow);
+    actionSave  = new cosh_Action(MainWindow);
+    actionExit  = new cosh_Action(MainWindow);
 
-	actionNew->setText(QStringLiteral("New"));
-	actionLoad->setText(QStringLiteral("Open"));
-	actionSave->setText(QStringLiteral("Save"));
-	actionExit->setText(QStringLiteral("Quit"));
+    actionNew->setText(QStringLiteral("New"));
+    actionLoad->setText(QStringLiteral("Open"));
+    actionSave->setText(QStringLiteral("Save"));
+    actionExit->setText(QStringLiteral("Quit"));
 
-	menuFile = new QMenu(menubar);
-	menuFile->setObjectName(QStringLiteral("menuFile"));
-	menuFile->setTitle(QStringLiteral("File"));
+    menuFile = new QMenu(menubar);
+    menuFile->setObjectName(QStringLiteral("menuFile"));
+    menuFile->setTitle(QStringLiteral("File"));
 
-	menubar->addAction(menuFile->menuAction());
-        menuFile->addAction(actionNew);
-        menuFile->addAction(actionLoad);
-        menuFile->addSeparator();
-        menuFile->addAction(actionSave);
-        menuFile->addSeparator();
-        menuFile->addAction(actionExit);
+    menubar->addAction(menuFile->menuAction());
+    menuFile->addAction(actionNew);
+    menuFile->addAction(actionLoad);
+    menuFile->addSeparator();
+    menuFile->addAction(actionSave);
+    menuFile->addSeparator();
+    menuFile->addAction(actionExit);
 	
-        statusbar = new QStatusBar(MainWindow);
-        statusbar->setObjectName(QStringLiteral("statusbar"));
-        MainWindow->setStatusBar(statusbar);
+    statusbar = new QStatusBar(MainWindow);
+    statusbar->setObjectName(QStringLiteral("statusbar"));
+    MainWindow->setStatusBar(statusbar);
 
-        retranslateUi(MainWindow);
+    retranslateUi(MainWindow);
 
-	QObject::connect(tabWidget, SIGNAL(tabBarClicked(int)),
-			 tabWidget, SLOT(Add_tab(int))); //New bill
-	QObject::connect(tabWidget, SIGNAL(tabBarDoubleClicked(int)),
-			 tabWidget, SLOT(Rename_tab(int))); //Rename bill
-	QObject::connect(addPayerButton, SIGNAL(clicked()),
-			 tabWidget, SLOT(Update_payer_columns())); //New payer
-	QObject::connect(lineEdit, SIGNAL(returnPressed()),
-			 tabWidget, SLOT(Update_payer_columns()));
-	QObject::connect(tabWidget, SIGNAL(PayerNameSignal()),
-			 lineEdit, SLOT(PayerNameCalled()));
-	QObject::connect(lineEdit, SIGNAL(SendName(QString)),
-			 tabWidget, SLOT(Rename_columns(QString)));
+    QObject::connect(tabWidget, SIGNAL(tabBarClicked(int)),
+		     tabWidget, SLOT(Add_tab(int))); //New bill
+    QObject::connect(tabWidget, SIGNAL(tabBarDoubleClicked(int)),
+		     tabWidget, SLOT(Rename_tab(int))); //Rename bill
+    QObject::connect(addPayerButton, SIGNAL(clicked()),
+		     tabWidget, SLOT(Update_payer_columns())); //New payer
+    QObject::connect(lineEdit, SIGNAL(returnPressed()),
+		     tabWidget, SLOT(Update_payer_columns()));
+    QObject::connect(tabWidget, SIGNAL(PayerNameSignal()),
+		     lineEdit, SLOT(PayerNameCalled()));
+    QObject::connect(lineEdit, SIGNAL(SendName(QString)),
+		     tabWidget, SLOT(Rename_columns(QString)));
 
-	QObject::connect(calculateButton, SIGNAL(clicked()),
-			 tabWidget, SLOT(Calculate()));
+    QObject::connect(calculateButton, SIGNAL(clicked()),
+		     tabWidget, SLOT(Calculate()));
 
-	QObject::connect(actionSave, SIGNAL(triggered()), actionSave, SLOT(save()));
-	QObject::connect(actionLoad, SIGNAL(triggered()), actionLoad, SLOT(load()));
+    QObject::connect(actionSave, SIGNAL(triggered()), actionSave, SLOT(save()));
+    QObject::connect(actionLoad, SIGNAL(triggered()), actionLoad, SLOT(load()));
 
-        QMetaObject::connectSlotsByName(MainWindow);
+    QMetaObject::connectSlotsByName(MainWindow);
 
-    } // setupUi
+    repopulate_data();
 
-    void retranslateUi(QMainWindow *MainWindow)
-    {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(new_bill_tab), QApplication::translate("MainWindow", "+", nullptr));
-        addPayerButton->setText(QApplication::translate("MainWindow", "Add payer", nullptr));
-        calculateButton->setText(QApplication::translate("MainWindow", "Calculate", nullptr));
-        lineEdit->setPlaceholderText(QApplication::translate("MainWindow", "New payer name", nullptr));
-    } // retranslateUi
+  } // setupUi
+
+  void repopulate_data()
+  {
+    
+    tabWidget->Repopulate_tabs();
+  }
+
+
+  void retranslateUi(QMainWindow *MainWindow)
+  {
+    MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
+    tabWidget->setTabText(tabWidget->indexOf(new_bill_tab), QApplication::translate("MainWindow", "+", nullptr));
+    addPayerButton->setText(QApplication::translate("MainWindow", "Add payer", nullptr));
+    calculateButton->setText(QApplication::translate("MainWindow", "Calculate", nullptr));
+    lineEdit->setPlaceholderText(QApplication::translate("MainWindow", "New payer name", nullptr));
+  } // retranslateUi
 
 };
 
