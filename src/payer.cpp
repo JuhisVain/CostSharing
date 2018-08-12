@@ -23,7 +23,7 @@ Payer::Payer(std::string& new_name, int paid):
 
 Payer::~Payer()
 {
-  total_payers--;
+  --total_payers;
   
   std::cout << "DESTROY Total payers is now " << total_payers << std::endl;
   std::cout << "Destroying " << name << std::endl;

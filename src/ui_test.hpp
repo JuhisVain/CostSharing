@@ -42,7 +42,10 @@
 QT_BEGIN_NAMESPACE
 
 extern Control controller; //4 hours down the drain
-
+/*
+extern Control *control_p;
+static Control controller = *control_p;
+*/
 
 //
 class cosh_LineEdit : public QLineEdit
@@ -763,6 +766,7 @@ public:
 
     std::cout << "Doing menus!" << std::endl;
 
+    //These don't prolly need to be separate objects
     actionNew = new cosh_Action(MainWindow);
     actionLoad = new cosh_Action(MainWindow);
     actionSave  = new cosh_Action(MainWindow);
@@ -809,7 +813,9 @@ public:
 
     QObject::connect(actionSave, SIGNAL(triggered()), actionSave, SLOT(save()));
     QObject::connect(actionLoad, SIGNAL(triggered()), actionLoad, SLOT(load()));
-
+    QObject::connect(actionNew, SIGNAL(triggered()), actionNew, SLOT(new_session()));
+    QObject::connect(actionExit, SIGNAL(triggered()), actionExit, SLOT(exit()));
+    
     QMetaObject::connectSlotsByName(MainWindow);
 
     repopulate_data();

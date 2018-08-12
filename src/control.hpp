@@ -36,12 +36,11 @@ public:
   std::vector<Payer*> Get_payers();
   std::vector<Bill*> Get_bills();
 
+  void Delete_everything();
+
 private:
   All_bills allbills;
   std::vector<int_fract> output;
-
-  void Delete_everything();
-
 };
 
 #endif

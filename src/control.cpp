@@ -328,6 +328,7 @@ std::vector<Bill*> Control::Get_bills()
 
 void Control::Delete_everything()
 {
+  
   All_bills new_allbills;
   allbills = new_allbills;
 }

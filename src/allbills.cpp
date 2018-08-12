@@ -10,6 +10,17 @@ All_bills::All_bills()
 All_bills::~All_bills()
 {
   std::cout << "all_bills getting deleted" << std::endl;
+  /* these do nothing:
+  payers.clear();
+  bills.clear();
+  */
+
+  std::cout << "Is payers empty? answer: " << payers.empty() << std::endl; //WTF
+  while (!payers.empty()) {
+    std::cout << "Popping payers list" << std::endl;
+    payers.pop_back();
+  }
+  
 }
 
 void All_bills::New_payer(Payer *new_payer)

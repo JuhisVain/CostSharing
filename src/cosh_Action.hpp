@@ -16,7 +16,10 @@
 QT_BEGIN_NAMESPACE
 
 extern Control controller;
-
+/*
+extern Control *control_p;
+static Control controller = *control_p;
+*/
 class cosh_Action : public QAction
 {
   Q_OBJECT
@@ -43,7 +46,17 @@ public slots:
 
     //Can't access Ui_MainWindow class through any namespace, must be forced
     QCoreApplication::exit(666);
+  }
 
+  void new_session()
+  {
+    controller.Delete_everything();
+    QCoreApplication::exit(666);
+  }
+
+  void exit()
+  {
+    QCoreApplication::exit(0);
   }
 
 };

@@ -21,24 +21,30 @@ int main(int argc, char **argv)
   if (argc == 1) { //Poor man's arg parsing
 
     const int RESTART = 666;
-
     std::cout << "QT" << std::endl;
 
   restart:
+    //controller = new Control();
+    
     QApplication app(argc,argv);
     Ui_MainWindow test_gui;
     //test_gui.show();
     QMainWindow testmw;
-    
+
     test_gui.setupUi(&testmw);
     testmw.show();
-    if (app.exec() == RESTART) goto restart;
+    if (app.exec() == RESTART) {
+      //delete controller;
+      goto restart;
+    }
     return 0;
 
   }
 
 
   std::cout << "CLI" << std::endl;
+
+  //controller = new Control(); //Maybe not required here
   
   All_bills allbills;
 
