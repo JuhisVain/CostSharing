@@ -24,6 +24,8 @@ public:
 
   std::vector<int_fract> Calculate();
 
+  void Delete_data();
+
 private:
   //These should prolly have been vectors
   std::list<Payer*> payers;

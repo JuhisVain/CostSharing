@@ -246,8 +246,19 @@ void Control::Save(std::string savefilename)
 
 void Control::Load(std::string loadfilename)
 {
+
+  std::cout << "Do payers NOT exist when they should exist? "
+	    << allbills.No_payers() << std::endl;
+  std::cout << "control load address allbills before delete: " << &allbills
+	    << std::endl;
+  
   Delete_everything();
 
+  std::cout << "Do payers NOT exist after they should have been deleted? "
+	    << allbills.No_payers() << std::endl;
+  std::cout << "control load address allbills after delete: " << &allbills
+	    << std::endl;
+  
   std::ifstream loadfile;
   loadfile.open(loadfilename, std::ifstream::in);
 
@@ -257,7 +268,7 @@ void Control::Load(std::string loadfilename)
 
   int payer_count = 0;
   loadfile >> payer_count;
-  std::cout << "payer count: " << payer_count << ", names: ";
+  std::cout << "payer count according to file: " << payer_count << ", names: ";
 
   for (int i = 0; i < payer_count; ++i) {
     std::string payer_name;
@@ -328,7 +339,14 @@ std::vector<Bill*> Control::Get_bills()
 
 void Control::Delete_everything()
 {
+
+  std::cout << "Control::Delete_everything()" << std::endl;
+  allbills.Delete_data();
   
   All_bills new_allbills;
+
+  std::cout << "Address of old allbills: " << &allbills
+	    << "Address of new allbills: " << &new_allbills << std::endl;
+  
   allbills = new_allbills;
 }

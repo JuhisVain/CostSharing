@@ -171,3 +171,11 @@ void All_bills::Resize_item_weights(int new_size)
 
   std::cout << std::endl;
 }
+
+//Should have apparently created everythin on stack
+void All_bills::Delete_data()
+{
+  //Will not work on pointers
+  payers.clear();
+  bills.clear();
+}

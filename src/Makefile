@@ -664,7 +664,6 @@ moc_ui_test.cpp: cosh_Action.hpp \
 		bill.hpp \
 		item.hpp \
 		ui_test.hpp \
-		ui_test.hpp \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/juho/Puuhailu/cpp/cppproj/CostSharing/src -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I/usr/include/c++/8.1.1 -I/usr/include/c++/8.1.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.1.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.1.1/include-fixed -I/usr/include ui_test.hpp -o moc_ui_test.cpp
@@ -675,8 +674,6 @@ moc_cosh_Action.cpp: control.hpp \
 		int_fract.hpp \
 		bill.hpp \
 		item.hpp \
-		ui_test.hpp \
-		cosh_Action.hpp \
 		cosh_Action.hpp \
 		moc_predefs.h \
 		/usr/bin/moc
