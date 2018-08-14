@@ -67,6 +67,7 @@ int Item::Get_weight(int index)
 
 std::vector<int> *Item::Get_weights()
 {
+  std::cout << "Wights size in item object: " << weights.size() <<std::endl;;
   return &weights;
 }
 

@@ -176,7 +176,12 @@ public slots:
     
     controller.Set_billpayer(payer_name.toStdString(), linked_bill);
   }
-
+  /*
+  std::string Get_billpayer()
+  {
+    return controller.Get_billpayer();
+  }
+*/
 
 private:
   QTabWidget *my_tabwidget; //This should have been just done with parent()?
@@ -259,10 +264,19 @@ public:
 public slots:
   void Add_row()
   {
+    std::cout << "Add_row()" << std::endl;
     Nuke_finals(); //Rows are table specific: All tables need finalnuking
     controller.New_item(((cosh_Tab*)parent())->Get_bill());
     setRowCount(rowCount()+1);
+    std::cout << "add_row OVER" << std::endl;
   }
+
+  void Add_row_no_new_items()
+  {
+    Nuke_finals();
+    setRowCount(rowCount()+1);
+  }
+  
   void Rename_column(QString col_name)
   {
     if (col_name.isNull()) {
@@ -465,16 +479,26 @@ public slots:
 		     tab, SLOT(handleCell(QTableWidgetItem*)));
       
       
-      std::vector<Item*> items_vector = bills_vector[i]->Get_items();
-      for (int j = 0; j < items_vector.size(); ++j) {
-	table->Add_row();
-	table->setItem(table->rowCount()-1,0,new QTableWidgetItem()); //Name column
-	table->item(table->rowCount()-1,0)
-	  ->setText(QString::fromStdString(items_vector[j]->Get_name()));
-	table->setItem(table->rowCount()-1,1,new QTableWidgetItem()); //Price column
+      std::vector<Item> *items_vector = bills_vector[i]->Get_items();
+      for (int j = 0; j < items_vector->size(); ++j) {
+	std::cout << "Now forring items_vector in ui_test.hpp" << std::endl;
+	std::cout << "j : " << j << " items_vector.size = " << items_vector->size() << std::endl;
+	
+	table->Add_row_no_new_items();
+	
+	std::cout << "1" << std::endl;
 
-	std::string temp = std::to_string(items_vector[j]->Get_price());
+	table->setItem(table->rowCount()-1,0,new QTableWidgetItem()); //Name column
+	std::cout << "2" << std::endl;
+	table->item(table->rowCount()-1,0)
+	  ->setText(QString::fromStdString((*items_vector)[j].Get_name()));
+	std::cout << "3" << std::endl;
+	table->setItem(table->rowCount()-1,1,new QTableWidgetItem()); //Price column
+	std::cout << "4" << std::endl;
+
+	std::string temp = std::to_string((*items_vector)[j].Get_price());
 	while (temp.size() < 3) temp.insert(0,"0");
+	std::cout << "In while" << std::endl;
 	temp.insert(temp.size()-2,",");
 
 	table->item(table->rowCount()-1,1)
@@ -485,7 +509,7 @@ public slots:
 	  //Weight columns:
 	  table->setItem(table->rowCount()-1,weight_i+2,new QTableWidgetItem());
 	  table->item(table->rowCount()-1,weight_i+2)
-	    ->setText(QString::number(items_vector[j]->Get_weight(weight_i)));
+	    ->setText(QString::number((*items_vector)[j].Get_weight(weight_i)));
 	}
       }
       
@@ -602,6 +626,14 @@ public slots:
       BillPayerCombo->setCurrentIndex(0);
       new_tab->Set_billpayer(BillPayerCombo->currentText());
       */
+
+      if (load) {
+	QString name = QString::fromStdString(load->Get_payer()->Get_name());
+	BillPayerCombo->setCurrentIndex(BillPayerCombo->findText(name)); 
+      } else {
+	BillPayerCombo->setCurrentIndex(0);
+	new_tab->Set_billpayer(BillPayerCombo->currentText());
+      }
 
       new_tab->Set_pointer_to_table_has_final_bool(tableWidget->Get_has_final_pointer());
             

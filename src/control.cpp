@@ -9,9 +9,8 @@ Bill *Control::New_bill()
 {
   std::cout << "Control::New_bill()" << std::endl;
 
-  Bill *newbill = new Bill("Bill", NULL);
-  allbills.New_bill(newbill);
-  return allbills.Get_bills().back();
+  Bill *newbill = allbills.New_bill();
+  return newbill;
 }
 
 void Control::Rename_bill(Bill *bill, std::string name)
@@ -21,13 +20,12 @@ void Control::Rename_bill(Bill *bill, std::string name)
   bill->Set_name(name);
 }
 
-void Control::New_payer(std::string name)
+Payer *Control::New_payer(std::string name)
 {
   std::cout << "Control::New_payer(" << name << ")" << std::endl;
   
-  Payer *new_payer = new Payer();
-  new_payer->Set_name(name);
-  allbills.New_payer(new_payer);
+  Payer *new_payer = allbills.New_payer(name);
+  return new_payer;
 }
 
 void Control::New_item(Bill *bill)
@@ -174,6 +172,11 @@ void Control::Set_billpayer(std::string name, Bill *bill)
   
 }
 
+std::string Control::Get_billpayer(Bill *bill)
+{
+  return bill->Get_payer()->Get_name();
+}
+
 std::vector<int_fract> Control::Calculate()
 {
   std::cout << "control clears vector" << std::endl;
@@ -223,17 +226,20 @@ void Control::Save(std::string savefilename)
   std::vector<Bill*> bills = allbills.Get_bills();
   
   for (int bi = 0; bi < bills.size(); ++bi) {
-    std::vector<Item*> items = bills[bi]->Get_items();
+    std::vector<Item> *items = bills[bi]->Get_items();
     savefile << bills[bi]->Get_name() << "\t"
-	     << items.size() << "\n";
+	     << items->size() << "\n";
     savefile << bills[bi]->Get_payer()->Get_name() << "\n";
 
-    for (int it = 0; it < items.size(); ++it) {
-      savefile << items[it]->Get_name() << "\t"
-	       << items[it]->Get_price() << "\n";
-      std::vector<int> *weights = items[it]->Get_weights();
+    for (int it = 0; it < items->size(); ++it) {
+      std::cout << "it: " << it << " itemsize: " << items->size() << std::endl;
+      savefile << (*items)[it].Get_name() << "\t"
+	       << (*items)[it].Get_price() << "\n";
+      std::vector<int> *weights = (*items)[it].Get_weights();
 
       for (int we = 0; we < weights->size(); ++we) {
+	std::cout << "we: " << we << " weights.size: " << weights->size()
+		  << " value: " << (*weights)[we] << std::endl;
 	savefile << (*weights)[we] << "\t";
       }
       savefile << "\n" << std::endl;

@@ -33,12 +33,14 @@ Payer::Payer(const Payer& tocopy):
   name(tocopy.name), id(tocopy.id),
   total_paid(tocopy.total_paid), to_pay(tocopy.to_pay)
 {
-  std::cout << "COPY Total payers is now " << total_payers << std::endl;
+
   total_payers++;
+  std::cout << "COPY Total payers is now " << total_payers << std::endl;
 }
 
 void Payer::Set_name(std::string& new_name)
 {
+  std::cout << "Payer name getting changed to: " << new_name << std::endl;
   name = new_name;
 }
 std::string Payer::Get_name()

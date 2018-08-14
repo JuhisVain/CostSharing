@@ -1,0 +1,27 @@
+/home/juho/Puuhailu/cpp/cppproj/CostSharing/src/test31.save
+3
+payer1	payer2	einari	
+firstbill	1
+payer1
+fgh	2300
+1	4	1	0	
+
+secondbill	2
+payer1
+efg	200
+1	1	1	0	
+
+juy5	300
+1	0	1	0	
+
+thirdbill	3
+payer2
+bdfg	3550
+1	1	1	0	
+
+ht4y	3430
+1	4	1	0	
+
+dfgs	25650
+1	1	1	0	
+

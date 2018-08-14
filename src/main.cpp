@@ -18,7 +18,7 @@ Control controller;
 int main(int argc, char **argv)
 {
 
-  if (argc == 1) { //Poor man's arg parsing
+  //if (argc == 1) { //Poor man's arg parsing
 
     const int RESTART = 666;
     std::cout << "QT" << std::endl;
@@ -39,9 +39,9 @@ int main(int argc, char **argv)
     }
     return 0;
 
-  }
+    //}
 
-
+  /*
   std::cout << "CLI" << std::endl;
 
   //controller = new Control(); //Maybe not required here
@@ -67,15 +67,15 @@ int main(int argc, char **argv)
       
       in_payer->Set_name(input);
       
-      /* //Paid should be calculated by bills paid TODO
+      //Paid should be calculated by bills paid TODO
       // ps should only be calculated once all data input is in
-      int cents_paid;
+      //int cents_paid;
       
-      std::cout << "Insert total paid: ";
-      std::cin >> cents_paid;
+      //std::cout << "Insert total paid: ";
+      //std::cin >> cents_paid;
 
-      in_payer->Set_paid(cents_paid);
-      */
+      //in_payer->Set_paid(cents_paid);
+      
       //allbills.payers.push_back(in_payer);
       
       allbills.New_payer(in_payer);
@@ -97,12 +97,12 @@ int main(int argc, char **argv)
       }
 
       std::cin >> input;
-      /*
-      iter = allbills.payers.begin();
-      for (int i = 0; i < std::stoi(input); ++i) {
-	++iter;
-      }
-      */
+      
+      //iter = allbills.payers.begin();
+      //for (int i = 0; i < std::stoi(input); ++i) {
+      //++iter;
+      //}
+      
       std::cout << "Creating new bill." << std::endl;
       
       Bill *in_bill = new Bill(nameofbill,payer_vector[std::stoi(input)]); //DANGER
@@ -272,5 +272,5 @@ void Modify_bill(Bill *bill, All_bills ab)
     }
 
   }
-  
+*/  
 }

@@ -29,25 +29,22 @@ void Bill::Set_payer(Payer *new_payer)
   bill_payer = new_payer;
 }
 
-Item* Bill::New_item()
+Item *Bill::New_item()
 {
-
   std::cout << "bill::newitem()" << std::endl;
-  
-  
-  Item *nitem = new Item(Payer::Get_total_payers());
+  Item nitem(Payer::Get_total_payers());
   items.push_back(nitem);
-  return nitem;
+  return &(items.back());
 }
 
-std::vector<Item*> Bill::Get_items()
+std::vector<Item> *Bill::Get_items()
 {
-  return items;
+  return &items;
 }
 
 Item* Bill::Get_item(int index)
 {
-  return items[index];
+  return &(items[index]);
 }
 
 void Bill::Reset_owed()
@@ -73,7 +70,7 @@ int Bill::Get_total_price()
 {
   int total = 0;
   for (int i = 0; i < items.size(); ++i) {
-    total += items[i]->Get_price();
+    total += items[i].Get_price();
   }
   return total;
 }
