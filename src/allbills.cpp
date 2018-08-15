@@ -26,8 +26,9 @@ All_bills::~All_bills()
 Payer *All_bills::New_payer()
 {
   std::cout << "all_bills::new_payer" << std::endl;
-  Payer payer = Payer();
-  payers.push_back(payer);
+  //Payer payer = Payer();
+  std::cout << "NP(void)Creating stack payer in par of allbills.payers.push_back" << std::endl;
+  payers.push_back(Payer());
   Resize_item_weights(Payer::Get_total_payers());
 
   return &(payers.back());
@@ -37,8 +38,9 @@ Payer *All_bills::New_payer()
 Payer *All_bills::New_payer(std::string name)
 {
   std::cout << "all_bills::new_payer(name)" << std::endl;
-  Payer payer = Payer(name, 0);
-  payers.push_back(payer);
+  //Payer payer = Payer(name, 0);
+  std::cout << "NP(name)Creating stack payer in par of allbills.payers.push_back" << std::endl;
+  payers.push_back(Payer(name, 0));
   Resize_item_weights(Payer::Get_total_payers());
 
   return &(payers.back());
