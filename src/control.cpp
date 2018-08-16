@@ -54,8 +54,6 @@ std::string Control::Reprice_item(Bill *bill, int index, std::string price)
   for (int i = 0; i < price.length(); ++i) {
 
     int charint = (int)(*striter);
-    std::cout << "charint=" << charint << std::endl
-	      << "Smallmoney: "<< small_money << std::endl;
 
     if (charint >= '0' && charint <= '9') {
 
@@ -67,44 +65,28 @@ std::string Control::Reprice_item(Bill *bill, int index, std::string price)
 	} else {
 	  *counter = 10 * (charint-'0');
 	}
-	std::cout << "first decimal: " << charint-'0' << std::endl;
 	++striter;
 	continue;
       } else if (money_type == &small_money && (sm_ten_zero || small_money)) { //Second decimal
-	std::cout << "final decimal: " << charint-'0' << std::endl;
 	small_money += (charint-'0');
 	break;
       }
-      
       counter = money_type;
-      *counter = *counter*10 + charint-'0'; //Will fail if tens of small money zero
-
-      std::cout << "*c:" << *counter << ",";
+      *counter = *counter*10 + charint-'0'; //Will fail if tens of small money zero; fixed with above if + bool
 	
     } else if (counter == &big_money){
       money_type = &small_money;
-
-      std::cout << std::endl << "CHANGE" << std::endl;
-	
     } else if (counter == &small_money) {
-
-      std::cout << "BIG and SMALL calced" << std::endl;
-	
       break;
     }
     ++striter;
-      
   }
-
-  std::cout << std::endl << "OVER, small money:" << small_money
-	    << std::endl << "boolean: " << sm_ten_zero << std::endl;
 
   if (small_money < 10 && !sm_ten_zero) { // 123.1 == 123.10
     small_money *= 10;
   } else { // 123.123 == 123.12
     while (small_money > 99) small_money /= 10;
   }
-    
     
   small_money += big_money*100;
   std::cout << "money calced" << std::endl;
@@ -118,16 +100,7 @@ std::string Control::Reprice_item(Bill *bill, int index, std::string price)
     price = "0,0" + price;
   } else {
     price.insert(price.length()-2,",");
-    //if (sm_ten_zero) price.insert(price.length()-2,"0");
   }
-
-  std::cout << "prelim string price mod:"<<price<< std::endl;
-  /*
-  if (sm_ten_zero) {
-    price.insert(price.length()-1,"0");
-  }
-  */
-  std::cout << "string price mod:"<<price<< std::endl;
     
   return price;
 }
@@ -135,28 +108,14 @@ std::string Control::Reprice_item(Bill *bill, int index, std::string price)
 std::string Control::Reweight_item(Bill *bill, int item_index,
 			  int weight_index, std::string weight)
 {
-
-  std::cout << "Reweight_item called with ii:" << item_index
-	    << " wi:" << weight_index << " & " << weight << std::endl;
-
   int int_weight;
   try {
     int_weight = std::stoi(weight);
   } catch (std::invalid_argument const &inva) {
     int_weight = 1;
   }
-
-  std::cout << "int weight:" << int_weight << std::endl;
-  std::cout << "debug:" << std::endl;
-  std::cout << "Bill name: " << bill->Get_name() << std::endl;
-  std::cout << "item name: " << bill->Get_item(item_index)->Get_name() <<std::endl;
   
   bill->Get_item(item_index)->Set_weight(weight_index, int_weight);
-
-  std::cout << "weight set" << std::endl;
-
-  std::cout << "New weight for " << bill->Get_item(item_index)->Get_name() << std::endl;
-  std::cout    << " = " << bill->Get_item(item_index)->Get_weight(weight_index) << std::endl;
   
   return (std::to_string(bill->Get_item(item_index)->Get_weight(weight_index)));
 }
@@ -184,11 +143,8 @@ std::string Control::Get_billpayer(Bill *bill)
 }
 
 std::vector<int_fract> Control::Calculate()
-{
-  std::cout << "control clears vector" << std::endl;
-  
+{  
   output.clear();
-  std::cout << "cleared" << std::endl;
 
   if (allbills.No_payers()) {
     std::cout << "No payers found!" << std::endl;
@@ -238,14 +194,11 @@ void Control::Save(std::string savefilename)
     savefile << bills[bi]->Get_payer()->Get_name() << "\n";
 
     for (int it = 0; it < items->size(); ++it) {
-      std::cout << "it: " << it << " itemsize: " << items->size() << std::endl;
       savefile << (*items)[it].Get_name() << "\t"
 	       << (*items)[it].Get_price() << "\n";
       std::vector<int> *weights = (*items)[it].Get_weights();
 
       for (int we = 0; we < weights->size(); ++we) {
-	std::cout << "we: " << we << " weights.size: " << weights->size()
-		  << " value: " << (*weights)[we] << std::endl;
 	savefile << (*weights)[we] << "\t";
       }
       savefile << "\n" << std::endl;
@@ -258,18 +211,8 @@ void Control::Save(std::string savefilename)
 
 void Control::Load(std::string loadfilename)
 {
-
-  std::cout << "Do payers NOT exist when they should exist? "
-	    << allbills.No_payers() << std::endl;
-  std::cout << "control load address allbills before delete: " << &allbills
-	    << std::endl;
   
   Delete_everything();
-
-  std::cout << "Do payers NOT exist after they should have been deleted? "
-	    << allbills.No_payers() << std::endl;
-  std::cout << "control load address allbills after delete: " << &allbills
-	    << std::endl;
   
   std::ifstream loadfile;
   loadfile.open(loadfilename, std::ifstream::in);
@@ -314,30 +257,20 @@ void Control::Load(std::string loadfilename)
       loadfile >> item_name;
       std::cout << "item name: " << item_name << std::endl;;
       Rename_item(loaded_bill, i, item_name);
-
-      std::cout << "item renamed!" << std::endl;
       
       int item_price;
       loadfile >> item_price;
       std::cout << ", " << item_price << " cents" << std::endl;
-      /*
-      std::string modprice = std::to_string(item_price);
-      modprice.insert(modprice.size()-2,".");
-      */
+
       Set_item_price(loaded_bill,i,item_price);
-      //Reprice_item(loaded_bill, i, modprice);
 
       for (int payer_i = 0; payer_i < payer_count; ++payer_i) {
 	int payer_weight = 0;
 	loadfile >> payer_weight;
 	Reweight_item(loaded_bill, i, payer_i, std::to_string(payer_weight));
       }
-      
     }
-
   }
-  
-  
 }
 
 std::vector<Payer*> Control::Get_payers()
@@ -351,14 +284,7 @@ std::vector<Bill*> Control::Get_bills()
 
 void Control::Delete_everything()
 {
-
-  std::cout << "Control::Delete_everything()" << std::endl;
   allbills.Delete_data();
-  
   All_bills new_allbills;
-
-  std::cout << "Address of old allbills: " << &allbills
-	    << "Address of new allbills: " << &new_allbills << std::endl;
-  
   allbills = new_allbills;
 }

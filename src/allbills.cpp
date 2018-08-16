@@ -9,15 +9,8 @@ All_bills::All_bills()
 
 All_bills::~All_bills()
 {
-  std::cout << "all_bills getting deleted" << std::endl;
-  /* these do nothing:
-  payers.clear();
-  bills.clear();
-  */
-
-  std::cout << "Is payers empty? answer: " << payers.empty() << std::endl; //WTF
+  //Should be obsolete. Not that these ever did anything.
   while (!payers.empty()) {
-    std::cout << "Popping payers list" << std::endl;
     payers.pop_back();
   }
   
@@ -25,24 +18,15 @@ All_bills::~All_bills()
 
 Payer *All_bills::New_payer()
 {
-  std::cout << "all_bills::new_payer" << std::endl;
-  //Payer payer = Payer();
-  std::cout << "NP(void)Creating stack payer in par of allbills.payers.push_back" << std::endl;
   payers.push_back(Payer());
   Resize_item_weights(Payer::Get_total_payers());
-
   return &(payers.back());
-  
 }
 
 Payer *All_bills::New_payer(std::string name)
 {
-  std::cout << "all_bills::new_payer(name)" << std::endl;
-  //Payer payer = Payer(name, 0);
-  std::cout << "NP(name)Creating stack payer in par of allbills.payers.push_back" << std::endl;
   payers.push_back(Payer(name, 0));
   Resize_item_weights(Payer::Get_total_payers());
-
   return &(payers.back());
 }
 
@@ -57,13 +41,9 @@ std::list<Payer>::iterator All_bills::Get_payer_iterator()
 
 std::vector<Payer*> All_bills::Get_payers()
 {
-
-  std::cout << "There are a total of " << payers.size() << " payers" << std::endl;
-  
   std::vector<Payer*> payer_vector;
   std::list<Payer>::iterator payer_iterator = Get_payer_iterator(); //?
   for (int i = 0; payer_iterator != payers.end(); ++i, ++payer_iterator) {
-    std::cout << payer_iterator->Get_name() << std::endl;
     payer_vector.push_back(&*payer_iterator);
   }
 
@@ -75,21 +55,13 @@ bool All_bills::No_payers()
   return payers.empty();
 }
 
-
 Bill *All_bills::New_bill()
 {
-  std::cout << "All_bills::new_bill(newbill) ->";;
   Bill bill = Bill("Bill", NULL);
   bills.push_back(bill);
-  std::cout << "bills size now: " << bills.size() << std::endl;
   return &(bills.back());
 }
-/*
-std::list<Bill*>::iterator All_bills::Get_bill_iterator()
-{
-  return bills.begin();
-}
-*/
+
 std::vector<Bill*> All_bills::Get_bills()
 {
   std::vector<Bill*> bill_vector;
@@ -172,18 +144,11 @@ std::vector<int_fract> All_bills::Calculate()
 }
 
 void All_bills::Resize_item_weights(int new_size)
-{
-
-  std::cout << "all_bills::resize item weights (" << new_size << ")" << std::endl;
-  std::cout << "bill list size: " << bills.size() << std::endl;
-  
+{  
   for ( std::list<Bill>::iterator bill_iter = bills.begin();
 	bill_iter != bills.end(); ++bill_iter) {
 
-    std::cout << "Handling bill:" << bill_iter->Get_name() << std::endl;
-    
     std::vector<Item> *item_vector = bill_iter->Get_items();
-    std::cout << " -item vector size:" << item_vector->size() << std::endl;
     
     for (int i = 0; i < item_vector->size(); ++i) {
       std::cout << i;
@@ -194,7 +159,7 @@ void All_bills::Resize_item_weights(int new_size)
   std::cout << std::endl;
 }
 
-//Should have apparently created everythin on stack
+//Should have apparently created everythin on stack. update: everything on stack
 void All_bills::Delete_data()
 {
   //Will not work on pointers

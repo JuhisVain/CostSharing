@@ -16,35 +16,18 @@ int_fract::int_fract(const int& init)
 
 int_fract int_fract::operator*(const int number)
 {
-
-  std::cout << "infra MULT for: " << *this << std::endl;
-  
   wholes *= number;
   nominator *= number;
   wholes += nominator/denominator; //todo: check what happens when <0
   nominator %= denominator;
 
-  std::cout << "Before reduce: " << *this << std::endl;
-
   reduce();
-
-  std::cout << "-after reduce: " << *this << std::endl;
   
   return return_copy();
 }
 
 int_fract int_fract::operator/(int number)
 {
-  std::cout << "infra DIV for: " << *this << std::endl;
-  /* wtf have i been doing in here
-  denominator *= number;
-  int remain = wholes % number;
-  wholes /= number;
-  nominator *= number;
-  remain *= denominator;
-  nominator += remain;
-  */
-
   if (number == 0) {
     std::cout << "Division by zero" << std::endl; //Weights total for item zero
     number = 1;
@@ -59,20 +42,14 @@ int_fract int_fract::operator/(int number)
   number *= den_mem;
 
   nominator += remain;
-  
-  std::cout << "Before reduce: " << *this << std::endl;
 
   reduce();
 
-  std::cout << "-after reduce: " << *this << std::endl;
   return return_copy();
 }
 
 int_fract int_fract::operator+(const int_fract& other)
 {
-
-  std::cout << "infra ADD for: " << *this << std::endl;
-  
   int_fract ret;
   ret.wholes = this->wholes + other.wholes;
   ret.nominator = this->nominator * other.denominator
@@ -126,9 +103,6 @@ std::string int_fract::To_string()
 
 void int_fract::reduce()
 {
-  std::cout << "reduce:\n"
-	    << nominator << " / " << denominator << std::endl;
-    
   int div = nominator;
   int den = denominator;
 
@@ -140,9 +114,6 @@ void int_fract::reduce()
 
   nominator /= div;
   denominator /= div;
-
-  std::cout << nominator << " / " << denominator << std::endl;
-  
 }
 
 int_fract int_fract::return_copy()

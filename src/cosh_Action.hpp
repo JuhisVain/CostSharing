@@ -16,10 +16,7 @@
 QT_BEGIN_NAMESPACE
 
 extern Control controller;
-/*
-extern Control *control_p;
-static Control controller = *control_p;
-*/
+
 class cosh_Action : public QAction
 {
   Q_OBJECT

@@ -31,7 +31,6 @@ void Bill::Set_payer(Payer *new_payer)
 
 Item *Bill::New_item()
 {
-  std::cout << "bill::newitem()" << std::endl;
   Item nitem(Payer::Get_total_payers());
   items.push_back(nitem);
   return &(items.back());
@@ -55,10 +54,7 @@ void Bill::Reset_owed()
 void Bill::Add_to_owed(Payer *ower, int_fract owed_cents)
 {
   if (ower != bill_payer) {
-    std::cout << "Add_to_owed(xx, " << owed_cents << " )" << std::endl;
-    std::cout << payer_owed << " + " << owed_cents << " = " << std::endl;
     payer_owed = payer_owed + owed_cents;
-    std::cout << payer_owed << std::endl;
     ower->Add_topay(owed_cents);
     bill_payer->Add_to_owed_to(owed_cents);
   } else {

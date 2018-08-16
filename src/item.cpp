@@ -4,26 +4,17 @@
 
 Item::Item(int payer_count)
 {
-
-  std::cout << "Creating item with param:" << payer_count << std::endl;
-  
   name = "N/A";
   price = 0;
 
   shares = NULL;
-
-  std::cout << "weights size is " << weights.size() << std::endl;
   
   weights.resize(payer_count);
-
-  std::cout << "weights resized to " << weights.size() << std::endl;
 
   for (int i = 0; i < payer_count; ++i) {
     std::cout << "i=" << i << std::endl;
     weights[i] = 0;
   }
-
-  std::cout << "DONE" << std::endl;
 }
 
 void Item::Set_name(std::string new_name)
@@ -48,9 +39,6 @@ int Item::Get_price()
 
 void Item::Set_weight(int index, int weight)
 {
-
-  std::cout << "item::set_weight(" << index << "," << weight << ")" << std::endl;
-  std::cout << "Weights vector size = " << weights.size() << std::endl;
   
   if (index < weights.size() && index >= 0) {
     weights[index] = weight;
@@ -67,7 +55,6 @@ int Item::Get_weight(int index)
 
 std::vector<int> *Item::Get_weights()
 {
-  std::cout << "Wights size in item object: " << weights.size() <<std::endl;;
   return &weights;
 }
 
@@ -83,8 +70,6 @@ std::vector<int_fract> *Item::Get_shares()
   
   shares = new std::vector<int_fract>;
   for (int i = 0; i < weights.size(); ++i) {
-    std::cout << "Pushing to shares: " << weights[i]
-	      << ", fract: " << int_fract(weights[i]) << std::endl;
     shares->push_back(int_fract(weights[i]));
   }
   
@@ -103,9 +88,5 @@ std::vector<int_fract> *Item::Get_shares()
 
 void Item::resize_weights(int new_size)
 {
-  std::cout << "ITEM " <<name<< " IS RESIZED FROM " << weights.size()
-		    <<" TO ";
   weights.resize(new_size);
-
-  std::cout << weights.size() << std::endl;
 }
