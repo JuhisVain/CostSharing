@@ -2,45 +2,32 @@
 
 Control::Control()
 {
-  std::cout << "Control CONSTRUCTOR at address: " << (Control *)this << std::endl;
 }
 
 Bill *Control::New_bill()
 {
-  std::cout << "Control::New_bill()" << std::endl;
-
   Bill *newbill = allbills.New_bill();
   return newbill;
 }
 
 void Control::Rename_bill(Bill *bill, std::string name)
 {
-  std::cout << "Control::Rename_bill(x,"<< name <<")"
-	    << "old was: " << bill->Get_name() << std::endl;
   bill->Set_name(name);
 }
 
 Payer *Control::New_payer(std::string name)
 {
-  std::cout << "Control::New_payer(" << name << ")" << std::endl;
-  
   Payer *new_payer = allbills.New_payer(name);
   return new_payer;
 }
 
 void Control::New_item(Bill *bill)
 {
-  std::cout << "Control::New_item()" << std::endl;
-  
   bill->New_item();
 }
 
 void Control::Rename_item(Bill *bill, int index, std::string name)
 {
-  std::cout << "Rename item, row:" << index
-	    << " Old name:" << bill->Get_item(index)->Get_name()
-	    << " new name:" << name << std::endl;
-
   bill->Get_item(index)->Set_name(name);
 }
 
@@ -51,14 +38,11 @@ void Control::Set_item_price(Bill *bill, int index, int cents)
 
 //returns new price in large units as string
 std::string Control::Reprice_item(Bill *bill, int index, std::string price)
-{
-  std::cout << "Reprice item, row:" << index
-	    << " Old price:" << bill->Get_item(index)->Get_price()
-	    << " new price:" << price << std::endl;
-  
+{  
   int big_money=0, small_money=0;
   int *money_type = &big_money;
   int *counter = NULL;
+  bool sm_ten_zero = false;
   
   //If no [,.] in string assume large units(euro/dollar etc.)
   //let's just assume everything that is not a number is some
@@ -70,12 +54,30 @@ std::string Control::Reprice_item(Bill *bill, int index, std::string price)
   for (int i = 0; i < price.length(); ++i) {
 
     int charint = (int)(*striter);
-    std::cout << "charint=" << charint << std::endl;
+    std::cout << "charint=" << charint << std::endl
+	      << "Smallmoney: "<< small_money << std::endl;
 
     if (charint >= '0' && charint <= '9') {
 
+      //if we're looking at the first number after decimal point:
+      if (counter && money_type == &small_money && money_type != counter) {
+	counter = money_type;
+	if (charint == '0') {
+	  sm_ten_zero = true;
+	} else {
+	  *counter = 10 * (charint-'0');
+	}
+	std::cout << "first decimal: " << charint-'0' << std::endl;
+	++striter;
+	continue;
+      } else if (money_type == &small_money && (sm_ten_zero || small_money)) { //Second decimal
+	std::cout << "final decimal: " << charint-'0' << std::endl;
+	small_money += (charint-'0');
+	break;
+      }
+      
       counter = money_type;
-      *counter = *counter*10 + charint-'0';
+      *counter = *counter*10 + charint-'0'; //Will fail if tens of small money zero
 
       std::cout << "*c:" << *counter << ",";
 	
@@ -94,9 +96,10 @@ std::string Control::Reprice_item(Bill *bill, int index, std::string price)
       
   }
 
-  std::cout << std::endl << "OVER" << std::endl;
+  std::cout << std::endl << "OVER, small money:" << small_money
+	    << std::endl << "boolean: " << sm_ten_zero << std::endl;
 
-  if (small_money < 10) { // 123.1 == 123.10
+  if (small_money < 10 && !sm_ten_zero) { // 123.1 == 123.10
     small_money *= 10;
   } else { // 123.123 == 123.12
     while (small_money > 99) small_money /= 10;
@@ -107,20 +110,23 @@ std::string Control::Reprice_item(Bill *bill, int index, std::string price)
   std::cout << "money calced" << std::endl;
   bill->Get_item(index)->Set_price(small_money);
 
-  std::cout << "model price set" << std::endl;
-
   price = std::to_string(small_money);
 
-  std::cout << "string price set:"<<price<< std::endl;
-
-  if (small_money == 0) {
-    price += ",00";
-  } else if (small_money < 100) {
-    price = "0," +price;
+  if (small_money < 100 && small_money > 9) {
+    price = "0," + price;
+  } else if (small_money < 10) {
+    price = "0,0" + price;
   } else {
     price.insert(price.length()-2,",");
+    //if (sm_ten_zero) price.insert(price.length()-2,"0");
   }
 
+  std::cout << "prelim string price mod:"<<price<< std::endl;
+  /*
+  if (sm_ten_zero) {
+    price.insert(price.length()-1,"0");
+  }
+  */
   std::cout << "string price mod:"<<price<< std::endl;
     
   return price;
