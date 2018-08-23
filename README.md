@@ -28,5 +28,3 @@ Jane is owed 2653 - 3/4 small money units.
 That is 26 big moneys and 52.25 small moneys.
 ![Alt text](/other/SS.png "Screenshot")
 
-Problems:
-- Loading saved data will break if whitespace used in strings

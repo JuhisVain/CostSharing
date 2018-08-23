@@ -181,7 +181,7 @@ void Control::Save(std::string savefilename)
 	   << payers.size() << "\n";
 
   for (int i = 0; i < payers.size(); ++i) {
-    savefile << payers[i]->Get_name() << "\t";
+    savefile << Sanitize(payers[i]->Get_name()) << "\t";
   }
   savefile << "\n";
 
@@ -189,12 +189,12 @@ void Control::Save(std::string savefilename)
   
   for (int bi = 0; bi < bills.size(); ++bi) {
     std::vector<Item> *items = bills[bi]->Get_items();
-    savefile << bills[bi]->Get_name() << "\t"
+    savefile << Sanitize(bills[bi]->Get_name()) << "\t"
 	     << items->size() << "\n";
-    savefile << bills[bi]->Get_payer()->Get_name() << "\n";
+    savefile << Sanitize(bills[bi]->Get_payer()->Get_name()) << "\n";
 
     for (int it = 0; it < items->size(); ++it) {
-      savefile << (*items)[it].Get_name() << "\t"
+      savefile << Sanitize((*items)[it].Get_name()) << "\t"
 	       << (*items)[it].Get_price() << "\n";
       std::vector<int> *weights = (*items)[it].Get_weights();
 
@@ -229,7 +229,7 @@ void Control::Load(std::string loadfilename)
     std::string payer_name;
     loadfile >> payer_name;
     std::cout << payer_name << ", ";
-    New_payer(payer_name);
+    New_payer(Soil(payer_name));
   }
 
   while (!loadfile.eof()) {
@@ -238,7 +238,7 @@ void Control::Load(std::string loadfilename)
     if (loadfile.eof()) break;
     std::cout << "Bill name: " << billname << std::endl;
     Bill *loaded_bill = New_bill();
-    Rename_bill(loaded_bill, billname);
+    Rename_bill(loaded_bill, Soil(billname));
 
     int item_count = 0;
     loadfile >> item_count;
@@ -247,7 +247,7 @@ void Control::Load(std::string loadfilename)
     std::string bill_payer_name;
     loadfile >> bill_payer_name;
     std::cout << "Bill's payer: " << bill_payer_name << std::endl;
-    Set_billpayer(bill_payer_name, loaded_bill);
+    Set_billpayer(Soil(bill_payer_name), loaded_bill);
     std::cout << "billpayer SET!" << std::endl;
 
     for(int i = 0; i < item_count; ++i) {
@@ -256,7 +256,7 @@ void Control::Load(std::string loadfilename)
       std::string item_name;
       loadfile >> item_name;
       std::cout << "item name: " << item_name << std::endl;;
-      Rename_item(loaded_bill, i, item_name);
+      Rename_item(loaded_bill, i, Soil(item_name));
       
       int item_price;
       loadfile >> item_price;
@@ -271,6 +271,28 @@ void Control::Load(std::string loadfilename)
       }
     }
   }
+}
+
+//Transform everything unacceptable to '_'
+std::string Control::Sanitize(std::string dirty)
+{
+  for (int i = 0; dirty[i] != 0; ++i) {
+    if (dirty[i] < 33) {
+      dirty[i] = '_';
+    }
+  }
+  return dirty; //It's squeaky clean!
+}
+
+//All '_' to ' '
+std::string Control::Soil(std::string clean)
+{
+  for (int i = 0; clean[i] != 0; ++i) {
+    if (clean[i] == '_') {
+      clean[i] = ' ';
+    }
+  }
+  return clean;
 }
 
 std::vector<Payer*> Control::Get_payers()

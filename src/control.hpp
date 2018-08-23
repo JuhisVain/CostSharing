@@ -34,6 +34,9 @@ public:
   void Save(std::string savefilename);
   void Load(std::string loadfilename);
 
+  std::string Sanitize(std::string dirty);
+  std::string Soil(std::string clean);
+
   std::vector<Payer*> Get_payers();
   std::vector<Bill*> Get_bills();
 
